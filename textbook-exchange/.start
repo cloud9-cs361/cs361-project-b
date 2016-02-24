@@ -1,1 +1,1 @@
-forever -al /home/ubuntu/.forever/textbook.log start -c nodemon bin/www
+forever -al ~/.forever/textbook.log start -c nodemon bin/www

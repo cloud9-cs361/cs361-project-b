@@ -1,1 +1,1 @@
-tail -f /home/ubuntu/.forever/textbook.log
+tail -f ~/.forever/textbook.log
