@@ -22,8 +22,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// pass all routes to route file
 app.use('/', routes);
-app.use('/users', users);
+
+// example for having different route file handle different route
+// also note var users = require('./routes/users') above
+// app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
