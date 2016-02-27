@@ -16,4 +16,4 @@ As we are all using the same machine under the same user, there is no further co
 It should be rare that a pull request is done, but please if you develop on your own machine do so under a separate branch then merge it into master on this machine.  
 Also `git add -A` is part of the sequence as it's always a good idea to make sure any new files are being tracked.
 
-If you do work on your own branch and need help merging, I will do my best to do so. - @bodalj
+If you do work on your own branch and need help merging, I will do my best to do so - @bodalj
