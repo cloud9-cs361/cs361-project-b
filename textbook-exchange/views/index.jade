@@ -1,6 +1,22 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-  p Making changes
+  div.container
+    div.jumbotron
+      h1= title
+      
+      if user
+        p Welcome, #{user.fullName}
+        p
+          a.small(href="profile") View my profile
+        a.btn.btn-primary(href="/logout") Logout
+      else 
+        p Welcome to #{title}!  Ready to get started?
+        p
+          a.btn.btn-primary(href="/login") Login now
+        p
+          span.small Don't have an account?  
+          a.small(href="/register") Register now
+  
+  
+  

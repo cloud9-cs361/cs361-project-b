@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var profile = require('./routes/profile');
 var createAccount = require('./routes/createAccount');
 
 var app = express();
@@ -23,10 +24,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// pass all routes to route file
+// pass all routes to route directory
 app.use('/', routes);
 app.use('/createaccount', createAccount);
-
+//app.use('/profile', profile);
 // example for having different route file handle different route
 // also note var users = require('./routes/users') above
 // app.use('/users', users);
