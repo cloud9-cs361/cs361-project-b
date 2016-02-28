@@ -1,5 +1,9 @@
+#private folder for storing any configuration files or things we don't want on github
+textbook-exchange/.private
+
 # vim files
 *.vim
+
 
 # Created by https://www.gitignore.io/api/node
 
