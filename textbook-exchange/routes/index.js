@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'bookr' });
+  res.render('index');
 });
 
 router.get('/login', function(req, res, next) {
@@ -17,7 +17,6 @@ router.get('/login', function(req, res, next) {
 router.get('/logout', function(req, res, next) {
   res.redirect('/');
 });
-
 
 router.post('/', function(request, response) {
     
