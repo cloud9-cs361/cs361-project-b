@@ -18,9 +18,6 @@ router.get('/logout', function(req, res, next) {
   res.redirect('/');
 });
 
-router.get('/profile', function(req, res, next) {
-  res.render('profile', {title: 'bookr'});
-});
 
 router.post('/', function(request, response) {
     
