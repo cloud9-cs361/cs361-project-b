@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
+var index = require('./routes/index');
 var users = require('./routes/users');
 var profile = require('./routes/profile');
 var createAccount = require('./routes/createAccount');
@@ -24,8 +24,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// pass all routes to route directory
-app.use('/', routes);
+// attach route files at desired paths
+app.use('/', index);
 app.use('/createaccount', createAccount);
 //app.use('/profile', profile);
 // example for having different route file handle different route
