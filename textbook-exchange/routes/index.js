@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'bookr' });
+  res.render('index');
 });
 
 router.get('/login', function(req, res, next) {
@@ -11,7 +11,7 @@ router.get('/login', function(req, res, next) {
     fullName: "dummyuser" 
   }
   
-  res.render('index', {user, title: 'bookr'});
+  res.render('index', {user: user});
 });
 
 router.get('/logout', function(req, res, next) {
@@ -19,7 +19,7 @@ router.get('/logout', function(req, res, next) {
 });
 
 router.get('/profile', function(req, res, next) {
-  res.render('profile', {title: 'bookr'});
+  res.render('profile');
 });
 
 router.post('/', function(request, response) {

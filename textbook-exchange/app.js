@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // attach route files at desired paths
 app.use('/', index);
-app.use('/createaccount', createAccount);
+app.use('/createaccount', createAccount.router);
 //app.use('/profile', profile);
 // example for having different route file handle different route
 // also note var users = require('./routes/users') above

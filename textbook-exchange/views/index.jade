@@ -1,9 +1,6 @@
 extends layout
 
 block content
-  div.container
-    div.jumbotron
-      h1= title
       
       if user
         p Welcome, #{user.fullName}
@@ -11,12 +8,12 @@ block content
           a.small(href="profile") View my profile
         a.btn.btn-primary(href="/logout") Logout
       else 
-        p Welcome to #{title}!  Ready to get started?
+        p Welcome to bookr!  Ready to get started?
         p
           a.btn.btn-primary(href="/login") Login now
         p
           span.small Don't have an account?  
-          a.small(href="/createaccount") Register now
+          a.small(href="/createaccount") Register now.
   
   
   

@@ -1,8 +1,11 @@
 var assert = require('assert');
-describe('Array', function() {
-  describe('#indexOf()', function () {
-    it('should return index when the value is present', function () {
-      assert.equal(4, [1,2,3,4,5].indexOf(5));
+var createAccount = require('../routes/createAccount');
+
+describe('Validate Creation of Account', function() {
+  describe('username', function () {
+    it('username not less than 8 characters', function () {
+      var valid = createAccount.validateAccountCreation('name', 'baduser', 'validpA$$w0rd', 'validpA$$w0rd', '12345');
+      assert.equal(false, valid);
     });
   });
   describe('#indexOf()', function () {
