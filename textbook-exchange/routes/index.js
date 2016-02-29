@@ -18,10 +18,6 @@ router.get('/logout', function(req, res, next) {
   res.redirect('/');
 });
 
-router.get('/register', function(req, res, next) {
-  res.redirect('/');
-});
-
 router.get('/profile', function(req, res, next) {
   res.render('profile', {title: 'bookr'});
 });
