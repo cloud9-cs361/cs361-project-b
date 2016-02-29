@@ -10,8 +10,8 @@ router.get('/login', function(req, res, next) {
   var user = {
     fullName: "dummyuser" 
   }
-  
-  res.render('index', {user, title: 'bookr'});
+  res.render('index', {user: user, title: 'bookr'});
+
 });
 
 router.get('/logout', function(req, res, next) {
