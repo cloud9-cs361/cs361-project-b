@@ -14,4 +14,4 @@ module.exports.validateAccountCreation = function(name, username, password, pass
   
 };
 
-module.exports.router = router;
+module.exports = router;
