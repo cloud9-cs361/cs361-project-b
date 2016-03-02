@@ -11,6 +11,7 @@
     "csurf": "^1.8.3",
     "debug": "~2.2.0",
     "express": "~4.13.1",
+    "express-session": "^1.13.0",
     "express-stormpath": "^2.4.0",
     "forms": "^1.1.4",
     "jade": "^1.11.0",
