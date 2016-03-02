@@ -3,5 +3,16 @@ extends authLayout
 block content
   div.container
     div.jumbotron
-      h1= title
+      h2 Hello, #{name}!
+      
+      // Checking that user info is passed from login/create acccount
+      
+      h3 Your Information
+      table.table
+        tr
+          th Email:
+          td #{email}
+        tr
+          th Password:
+          td #{password}
 

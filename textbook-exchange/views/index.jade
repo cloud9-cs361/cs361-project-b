@@ -2,11 +2,12 @@ extends layout
 
 block content
       
-      if user
-        p Welcome, #{user.fullName}
+      if name
+        p Welcome, #{name}
         p
-          a.small(href="profile") View my profile
-        a.btn.btn-primary(href="/logout") Logout
+          a.small(href="/profile") View my profile
+          form(method="post" action="/logout")
+            button.btn.btn-primary Logout
       else 
         p Welcome to bookr!  Ready to get started?
         p

@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var forms = require('forms');
 var fields = forms.fields;
+var validators = forms.validators;
 
 var login_form = forms.create({
     fullName: fields.string({required: true}), // To be removed when have db-like objects
