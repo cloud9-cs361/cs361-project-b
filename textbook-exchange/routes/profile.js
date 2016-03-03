@@ -33,7 +33,7 @@ router.post('/', function(req, res, next){
             res.render('profile', context);
         },
         error: function (form) {
-            context.error = form.error; // Needs verification
+            context.error = form.toHTML(); // Needs verification
             res.render('login', context);
         },
         empty: function (form) {
