@@ -4,7 +4,8 @@ block content
 
     h2 Log In
     if error
-        div.alert.alert-danger #{error}
+        div.alert.alert-danger
+            | !{error}
     form(method="post" action="/profile")
         div.form-group
             label Name

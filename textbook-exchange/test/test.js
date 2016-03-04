@@ -4,12 +4,14 @@ var createAccount = require('../routes/createAccount');
 describe('Validate Creation of Account', function() {
   describe('name', function () {
     it('name is provided by user', function () {
-      var valid = createAccount.validateAccountCreation('', 'gooduser', 'validpA$$w0rd', 'validpA$$w0rd', '12345');
-      assert.equal(false, valid);
+      var errors = createAccount.validateAccountCreation('', 'good@user.com', 'validpA$$w0rd', 'validpA$$w0rd', '12345');
+      assert.equal(1, errors.length);
+      assert.ok(errors[0].includes("Name"));
     });
     it('name is not undefined', function () {
-      var valid = createAccount.validateAccountCreation(undefined, 'gooduser', 'validpA$$w0rd', 'validpA$$w0rd', '12345');
-      assert.equal(false, valid);
+      var errors = createAccount.validateAccountCreation(undefined, 'good@user.com', 'validpA$$w0rd', 'validpA$$w0rd', '12345');
+      assert.equal(1, errors.length);
+      assert.ok(errors[0].includes("Name"));
     });
     it('name is valid', function () {
       var valid = createAccount.validateAccountCreation('validname', 'gooduser', 'validpA$$w0rd', 'validpA$$w0rd', '12345');
