@@ -3,13 +3,14 @@ extends layout
 block content
 
     h2 Log In
-    if error
+    if errors
         div.alert.alert-danger
-            | !{error}
-    form(method="post" action="/profile")
+           each error in errors
+                div=error
+    form(method="post" action="/login")
         div.form-group
             label Name
-            input(type="text" placeholder="Full Name" name="fullName").form-control
+            input(type="text" placeholder="Full Name" name="name").form-control
         div.form-group
             label Email
             input(type="email" placeholder="Email" name="email").form-control
