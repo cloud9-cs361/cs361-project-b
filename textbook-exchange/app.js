@@ -12,8 +12,11 @@ var profile = require('./routes/profile');
 var createAccount = require('./routes/createAccount');
 var login = require('./routes/login');
 var logout = require('./routes/logout');
-var mongoClient = require('mongodb').MongoClient;
+var addBook = require('./routes/addBook');
+var search = require('./routes/search');
+var db = require('monk')('localhost/bookr');
 var app = express();
+app.db = db;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -37,6 +40,9 @@ app.use('/createaccount', createAccount);
 app.use('/profile', profile);
 app.use('/login', login);
 app.use('/logout', logout);
+app.use('/addbook', addBook);
+app.use('/search', search);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -66,19 +72,6 @@ app.use(function(err, req, res, next) {
   res.render('error', {
     message: err.message,
     error: {}
-  });
-});
-
-// connect to database
-var db;
-mongoClient.connect('mongodb://localhost:27017/bookr', function(err, db) {
-  if (err) {
-    throw err;
-  }
-  // Make DB connection available to all requests
-  app.use(function(req, res, next) {
-    req.db = db;
-    next();
   });
 });
 

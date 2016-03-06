@@ -1,6 +1,7 @@
 var assert = require('assert');
 var createAccount = require('../routes/createAccount');
 var login = require('../routes/login');
+var db = require('monk')('localhost/bookr');
 
 // still need tests to make sure email and password are valid for account when logging in
 
@@ -77,13 +78,24 @@ describe('Validate Login', function() {
       assert.equal(expectedErrors.length, errors.length, errors.toString());
       expectedErrors.every(expected => errors.some(expected));
     });
-    // need test to make sure account exists for email
+    it('email exists in usersCollection', function (done) {
+      var usersCollection = db.get('testUsers');
+      usersCollection.remove({'email': 'nonexistent@email.com'});
+      login.validateAgainstDB('nonexistent@email.com', 'validpA$$w0rd', usersCollection, function(errors) {
+        var expectedErrors = [
+          error => error.includes("No account")
+        ];
+        assert.equal(expectedErrors.length, errors.length, errors.toString());
+        expectedErrors.every(expected => errors.some(expected));
+        done();
+      });
+    });
   });
   describe('password', function () {
     it('password is provided by user', function () {
       var errors = login.validateLogin('validname', 'good@email.com', '');
       var expectedErrors = [
-        error => error.includes("password"),
+        error => error.includes("password")
       ];
       assert.equal(expectedErrors.length, errors.length, errors.toString());
       expectedErrors.every(expected => errors.some(expected));
@@ -91,12 +103,24 @@ describe('Validate Login', function() {
     it('password is not undefined', function () {
       var errors = login.validateLogin('validname', 'good@email.com', undefined);
       var expectedErrors = [
-        error => error.includes("password"), 
+        error => error.includes("password") 
       ];
       assert.equal(expectedErrors.length, errors.length, errors.toString());
       expectedErrors.every(expected => errors.some(expected));
     });
-    // need test to check if password is valid for account
+    it('password does not match expected password for user account', function (done) {
+      var usersCollection = db.get('testUsers');
+      usersCollection.insert({'email': 'good@email.com', 'password': 'validpA$$w0rd'});
+      login.validateAgainstDB('good@email.com', 'doe$N0tMatch', usersCollection, function(errors) {
+        usersCollection.remove({'email': 'good@email.com', 'password': 'validpA$$w0rd'});
+        var expectedErrors = [
+          error => error.includes("incorrect")
+        ];
+        assert.equal(expectedErrors.length, errors.length, errors.toString());
+        expectedErrors.every(expected => errors.some(expected));
+        done();
+      });
+    });
     it('password is valid', function () {
       var errors = login.validateLogin('validname', 'good@email.com', 'validpA$$w0rd');
       var expectedErrors = [];
@@ -173,13 +197,18 @@ describe('Validate Creation of Account', function() {
       assert.equal(expectedErrors.length, errors.length, errors.toString());
       expectedErrors.every(expected => errors.some(expected));
     });
-    it('email is not a duplicate', function () {
-      var errors = createAccount.validateAccountCreation('validname', 'duplicate@email.com', 'validpA$$w0rd', 'validpA$$w0rd', '12345');
-      var expectedErrors = [
-        error => error.includes("email")
-      ];
-      assert.equal(expectedErrors.length, errors.length, errors.toString());
-      expectedErrors.every(expected => errors.some(expected));
+    it('email is not a duplicate', function (done) {
+      var usersCollection = db.get('testUsers');
+      usersCollection.insert({"email": 'duplicate@email.com'});
+      createAccount.validateAgainstDB('duplicate@email.com', usersCollection, function(errors) {
+        usersCollection.remove({"email": 'duplicate@email.com'});
+        var expectedErrors = [
+          error => error.includes("already exists")
+        ];
+        assert.equal(expectedErrors.length, errors.length, errors.toString());
+        expectedErrors.every(expected => errors.some(expected));
+        done();
+      });
     });
     it('email is valid', function () {
       var errors = createAccount.validateAccountCreation('validname', 'good@email.com', 'validpA$$w0rd', 'validpA$$w0rd', '12345');

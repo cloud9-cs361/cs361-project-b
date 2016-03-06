@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var assert = require('assert');
 
 function validateAccountCreation(name, email, password, password2, zip) {
   var errors = [];
@@ -11,7 +12,6 @@ function validateAccountCreation(name, email, password, password2, zip) {
   if (email == undefined || email.length == 0 || !(email.includes('@') && email.includes('.'))) {
     errors.push('Valid email address is required.');
   }
-  // need validation to check if account already exists for email
   // password validation
   if (password == undefined || password.length == 0 || password.length < 8 || password.length > 30) {
     errors.push('Password must be greater than or equal to 8 characters and less than or equal to 30 characters long.');
@@ -24,15 +24,12 @@ function validateAccountCreation(name, email, password, password2, zip) {
     if (!password.match(lcase)) {
       errors.push('Password must contain at least one lowercase letter.');
     }
-    
     if (!password.match(ucase)) {
       errors.push('Password must contain at least one uppercase letter.');
     }
-    
     if (!password.match(number)) {
       errors.push('Password must contain at least one number.');
     }
-    
     if (!password.match(symbol)) {
       errors.push('Password must contain at least one symbol.');
     }
@@ -62,6 +59,17 @@ function validateAccountCreation(name, email, password, password2, zip) {
   return errors;
 }
 
+function validateAgainstDB(email, usersCollection, callback) {
+  usersCollection.find({"email": email}, function (err, docs){
+    var errors = [];
+    assert.equal(err, null);
+    if (docs != null) {
+      errors.push('Account already exists for this email.');
+    }
+    callback(errors);
+  });
+}
+
 /* GET createAccount page. */
 router.get('/', function(req, res, next) {
   res.render('createAccount');
@@ -69,31 +77,35 @@ router.get('/', function(req, res, next) {
 
 router.post('/', function(req, res) {
   var errors = validateAccountCreation(req.body.name, req.body.email, req.body.password, req.body.password2, req.body.zip);
-  if (errors.length == 0) {
-    // write account info to database
-    var usersCollection = req.db.get('users');
-    usersCollection.insert({
-      'email': req.body.email, 
-      'name': req.body.name, 
-      'password': req.body.password, // should be hashed
-      'zip': req.body.zip
-    }, function (err, doc) {
-      if (err) {
-        // If there was a problem adding account info to database, return error
-        res.send("There was a problem adding your account information to the database.")
-      } else {
-        // Add name and email to session
-        req.session.name = req.body.name;
-        req.session.email = req.body.email;
-        res.redirect('/profile');
-      }
-    });
-  }
-  else {
-    res.render('createAccount', {errors: errors});
-  }
+  validateAgainstDB(req.body.email, req.app.db.get('users'), function (dbErrors) {
+    errors = errors.concat(dbErrors);
+    if (errors.length == 0) {
+      // write account info to database
+      var usersCollection = req.app.db.get('users');
+      usersCollection.insert({
+        'email': req.body.email, 
+        'name': req.body.name, 
+        'password': req.body.password, // should be hashed
+        'zip': req.body.zip
+      }, function (err, doc) {
+        if (err) {
+          // If there was a problem adding account info to database, return error
+          res.send("There was a problem adding your account information to the database.");
+        } else {
+          // Add name and email to session
+          req.session.name = req.body.name;
+          req.session.email = req.body.email;
+          res.redirect('/profile');
+        }
+      });
+    }
+    else {
+      res.render('createAccount', {errors: errors});
+    }
+  });
 });
 
 module.exports = router;
 
 module.exports.validateAccountCreation = validateAccountCreation;
+module.exports.validateAgainstDB = validateAgainstDB;
