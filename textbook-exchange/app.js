@@ -82,7 +82,4 @@ mongoClient.connect('mongodb://localhost:27017/bookr', function(err, db) {
   });
 });
 
-
-
-
 module.exports = app;
