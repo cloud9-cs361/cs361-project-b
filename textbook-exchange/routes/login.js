@@ -25,7 +25,6 @@ router.get('/', function(req, res, next){
 });
 
 router.post('/', function(req, res) {
-  console.log(req.body);
   var errors = validateLogin(req.body.name, req.body.email, req.body.password);
   if (errors.length == 0) {
     // Add name and email to session

@@ -68,15 +68,26 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res) {
-  console.log(req.body);
   var errors = validateAccountCreation(req.body.name, req.body.email, req.body.password, req.body.password2, req.body.zip);
   if (errors.length == 0) {
     // write account info to database
-    
-    // Add name and email to session
-    req.session.name = req.body.name;
-    req.session.email = req.body.email;
-    res.redirect('/profile');
+    var usersCollection = req.db.get('users');
+    usersCollection.insert({
+      'email': req.body.email, 
+      'name': req.body.name, 
+      'password': req.body.password, // should be hashed
+      'zip': req.body.zip
+    }, function (err, doc) {
+      if (err) {
+        // If there was a problem adding account info to database, return error
+        res.send("There was a problem adding your account information to the database.")
+      } else {
+        // Add name and email to session
+        req.session.name = req.body.name;
+        req.session.email = req.body.email;
+        res.redirect('/profile');
+      }
+    });
   }
   else {
     res.render('createAccount', {errors: errors});

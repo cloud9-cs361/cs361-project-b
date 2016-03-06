@@ -12,7 +12,7 @@ var profile = require('./routes/profile');
 var createAccount = require('./routes/createAccount');
 var login = require('./routes/login');
 var logout = require('./routes/logout');
-
+var mongoClient = require('mongodb').MongoClient;
 var app = express();
 
 // view engine setup
@@ -68,6 +68,21 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
+
+// connect to database
+var db;
+mongoClient.connect('mongodb://localhost:27017/bookr', function(err, db) {
+  if (err) {
+    throw err;
+  }
+  // Make DB connection available to all requests
+  app.use(function(req, res, next) {
+    req.db = db;
+    next();
+  });
+});
+
+
 
 
 module.exports = app;
