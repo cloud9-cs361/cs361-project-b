@@ -1,18 +1,25 @@
 extends authLayout
 
 block content
-  div.container
-    div.jumbotron
-      h2 Hello, #{name}!
-      
-      // Checking that user info is passed from login/create acccount
-      
-      h3 Your Information
-      table.table
-        tr
-          th Email:
-          td #{email}
-        // tr
-        //   th Password:
-        //   td #{password}
-
+    div.container
+        div.jumbotron
+            h2 Hello, #{name}!
+            
+    // Check that user info is passed from login/create acccount
+    div.container
+        div.jumbotron
+            if errors
+                div.alert.alert-danger
+                    each error in errors
+                        div=error
+            form(method="post" action="/search")
+                div.form-group
+                    input(type="text" placeholder="ISBN, Title, or Author" name="searchKeyword").form-control
+                div.form-group
+                    input(type="text" placeholder="Zip Code" name="zipCode").form-control
+                button(type="submit").btn.btn-primary Find Book
+        
+    div.container
+        div.jumbotron
+            h2 Book List
+            a.btn.btn-primary(href="/addbook") Add Book

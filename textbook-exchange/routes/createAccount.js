@@ -4,22 +4,27 @@ var assert = require('assert');
 
 function validateAccountCreation(name, email, password, password2, zip) {
   var errors = [];
+  
   // name validation
   if (name == undefined || name.length == 0) {
     errors.push('Name is required.');
   }
+  
   // email validation
   if (email == undefined || email.length == 0 || !(email.includes('@') && email.includes('.'))) {
     errors.push('Valid email address is required.');
   }
+  
   // password validation
   if (password == undefined || password.length == 0 || password.length < 8 || password.length > 30) {
     errors.push('Password must be greater than or equal to 8 characters and less than or equal to 30 characters long.');
   }
+  
   var lcase = /.*[a-z].*/;
   var ucase = /.*[A-Z].*/;
   var number = /.*[0-9].*/;
   var symbol = /.*[!@#$%^&*].*/;
+  
   if (password != undefined) {
     if (!password.match(lcase)) {
       errors.push('Password must contain at least one lowercase letter.');
@@ -34,17 +39,21 @@ function validateAccountCreation(name, email, password, password2, zip) {
       errors.push('Password must contain at least one symbol.');
     }
   }
+  
   // confirm password validation
   if (password2 == undefined || password2.length == 0 || !(password2 == password)) {
     errors.push('Both passwords must match.');
   }
+  
   // zip code validation
   if (zip == undefined || zip.length == 0) {
     errors.push('Zip code is required.');
   }
+  
   var zipLength = /^[0-9]{5}$/;
   var zipLetter = /.*[a-zA-Z].*/;
   var zipSymbol = /.*[!@#$%^&*].*/;
+  
   if (zip != undefined) {
     if (!zip.match(zipLength)) {
       errors.push('Zip code must be exactly 5 numbers long.');
@@ -56,19 +65,28 @@ function validateAccountCreation(name, email, password, password2, zip) {
       errors.push('Zip code must not contain any symbols.');
     }
   }
+  
   return errors;
+
+  
 }
 
 function validateAgainstDB(email, usersCollection, callback) {
+  
   usersCollection.find({"email": email}, function (err, docs){
+    
     var errors = [];
     assert.equal(err, null);
+    
+    //***Currently testing this.
     if (docs != null) {
       errors.push('Account already exists for this email.');
     }
+    
     callback(errors);
   });
 }
+
 
 /* GET createAccount page. */
 router.get('/', function(req, res, next) {
@@ -77,10 +95,13 @@ router.get('/', function(req, res, next) {
 
 router.post('/', function(req, res) {
   var errors = validateAccountCreation(req.body.name, req.body.email, req.body.password, req.body.password2, req.body.zip);
+  
   validateAgainstDB(req.body.email, req.app.db.get('users'), function (dbErrors) {
+    
     errors = errors.concat(dbErrors);
+    
     if (errors.length == 0) {
-      // write account info to database
+      // write book info to database
       var usersCollection = req.app.db.get('users');
       usersCollection.insert({
         'email': req.body.email, 

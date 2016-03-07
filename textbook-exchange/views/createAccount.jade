@@ -1,26 +1,30 @@
 extends layout
 
 block content
-  h2 Create an Account
+    h2 Create an Account
   
-  if errors
-    div.alert.alert-danger
-       each error in errors
-         div=error
-  form(method="post" action="/createaccount")
-    div.form-group
-      label Name
-      input(type="text" placeholder="Name" name="name").form-control
-    div.form-group
-      label Email
-      input(type="email" placeholder="Email" name="email").form-control
-    div.form-group
-      label Password
-      input(type="password" placeholder="Password" name="password").form-control
-    div.form-group
-      label Re-enter Password
-      input(type="password" placeholder="Password" name="password2").form-control
-    div.form-group
-      label Zip Code
-      input(type="text" placeholder="Zip Code" name="zip").form-control
-    button(type="submit").btn.btn-primary Create Account
+    if errors
+        div.alert.alert-danger
+            each error in errors
+                div=error
+    form(method="post" action="/createaccount")
+        div.form-group
+            label Name
+            input(type="text" placeholder="Name" name="name").form-control
+        div.form-group
+            label Email
+            input(type="email" placeholder="Email" name="email").form-control
+        div.form-group
+            label Password
+            input(type="password" placeholder="Password" name="password").form-control
+        div.form-group
+            label Re-enter Password
+            input(type="password" placeholder="Password" name="password2").form-control
+        div.form-group
+            label Zip Code
+            input(type="text" placeholder="Zip Code" name="zip").form-control
+        button(type="submit").btn.btn-primary Create Account
+    
+    p
+        span.small Already have an account?  
+        a.small(href="/login") Login.

@@ -47,3 +47,11 @@
   border-color: #ddd transparent #ddd #ddd;
   *border-right-color: #ffffff;
 }
+
+.button-link{
+ color: #FFFFFF;
+  padding: 10px 20px;
+  background-color: #A1A1A1;
+  border-radius: 8px;
+  border: 10px;
+}

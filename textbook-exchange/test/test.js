@@ -3,37 +3,11 @@ var createAccount = require('../routes/createAccount');
 var login = require('../routes/login');
 var db = require('monk')('localhost/bookr');
 
-// still need tests to make sure email and password are valid for account when logging in
-
 // Tests for Logging In
 describe('Validate Login', function() {
-  describe('name', function () {
-    it('name is provided by user', function () {
-      var errors = login.validateLogin('', 'good@email.com', 'validpA$$w0rd');
-      var expectedErrors = [
-        error => error.includes("Name")
-      ];
-      assert.equal(expectedErrors.length, errors.length, errors.toString());
-      expectedErrors.every(expected => errors.some(expected));
-    });
-    it('name is not undefined', function () {
-      var errors = login.validateLogin(undefined, 'good@email.com', 'validpA$$w0rd');
-      var expectedErrors = [
-        error => error.includes("Name")
-      ];
-      assert.equal(expectedErrors.length, errors.length, errors.toString());
-      expectedErrors.every(expected => errors.some(expected));
-    });
-    it('name is valid', function () {
-      var errors = login.validateLogin('validname', 'good@email.com', 'validpA$$w0rd');
-      var expectedErrors = [];
-      assert.equal(expectedErrors.length, errors.length, errors.toString());
-      expectedErrors.every(expected => errors.some(expected));
-    });
-  });
   describe('email', function () {
     it('email is provided by user', function () {
-      var errors = login.validateLogin('validname', '', 'validpA$$w0rd');
+      var errors = login.validateLogin('', 'validpA$$w0rd');
       var expectedErrors = [
         error => error.includes("email")
       ];
@@ -41,7 +15,7 @@ describe('Validate Login', function() {
       expectedErrors.every(expected => errors.some(expected));
     });
     it('email is not undefined', function () {
-      var errors = login.validateLogin('validname', undefined, 'validpA$$w0rd');
+      var errors = login.validateLogin(undefined, 'validpA$$w0rd');
       var expectedErrors = [
         error => error.includes("email")
       ];
@@ -49,7 +23,7 @@ describe('Validate Login', function() {
       expectedErrors.every(expected => errors.some(expected));
     });
     it('email does not contain @', function () {
-      var errors = login.validateLogin('validname', 'bademail.com', 'validpA$$w0rd');
+      var errors = login.validateLogin('bademail.com', 'validpA$$w0rd');
       var expectedErrors = [
         error => error.includes("email")
       ];
@@ -57,7 +31,7 @@ describe('Validate Login', function() {
       expectedErrors.every(expected => errors.some(expected));
     });
     it('email does not contain .', function () {
-      var errors = login.validateLogin('validname', 'bad@emailcom', 'validpA$$w0rd');
+      var errors = login.validateLogin('bad@emailcom', 'validpA$$w0rd');
       var expectedErrors = [
         error => error.includes("email")
       ];
@@ -65,7 +39,7 @@ describe('Validate Login', function() {
       expectedErrors.every(expected => errors.some(expected));
     });
     it('email does not contain . or @', function () {
-      var errors = login.validateLogin('validname', 'bademailcom', 'validpA$$w0rd');
+      var errors = login.validateLogin('bademailcom', 'validpA$$w0rd');
       var expectedErrors = [
         error => error.includes("email")
       ];
@@ -73,7 +47,7 @@ describe('Validate Login', function() {
       expectedErrors.every(expected => errors.some(expected));
     });
     it('email is valid', function () {
-      var errors = login.validateLogin('validname', 'good@email.com', 'validpA$$w0rd');
+      var errors = login.validateLogin('good@email.com', 'validpA$$w0rd');
       var expectedErrors = [];
       assert.equal(expectedErrors.length, errors.length, errors.toString());
       expectedErrors.every(expected => errors.some(expected));
@@ -93,7 +67,7 @@ describe('Validate Login', function() {
   });
   describe('password', function () {
     it('password is provided by user', function () {
-      var errors = login.validateLogin('validname', 'good@email.com', '');
+      var errors = login.validateLogin('good@email.com', '');
       var expectedErrors = [
         error => error.includes("password")
       ];
@@ -101,7 +75,7 @@ describe('Validate Login', function() {
       expectedErrors.every(expected => errors.some(expected));
     });
     it('password is not undefined', function () {
-      var errors = login.validateLogin('validname', 'good@email.com', undefined);
+      var errors = login.validateLogin('good@email.com', undefined);
       var expectedErrors = [
         error => error.includes("password") 
       ];
@@ -122,7 +96,7 @@ describe('Validate Login', function() {
       });
     });
     it('password is valid', function () {
-      var errors = login.validateLogin('validname', 'good@email.com', 'validpA$$w0rd');
+      var errors = login.validateLogin('good@email.com', 'validpA$$w0rd');
       var expectedErrors = [];
       assert.equal(expectedErrors.length, errors.length, errors.toString());
       expectedErrors.every(expected => errors.some(expected));
