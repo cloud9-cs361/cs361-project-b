@@ -1,0 +1,29 @@
+extends authLayout
+
+block content
+    
+    div.container
+        div.jumbotron
+            h2 Add a Book to Trade
+            
+            if errors
+                div.alert.alert-danger
+                    each error in errors
+                        div=error
+            form(name="addbook" method="post" action="/addBook")
+                div.form-group
+                    label ISBN
+                    input(type="text" placeholder="ISBN" name="isbn").form-control
+                div.form-group
+                    label Title
+                    input(type="text" placeholder="Title" name="title").form-control
+                div.form-group
+                    label Author
+                    input(type="text" placeholder="Author" name="author").form-control
+                div.form-group
+                    label Edition
+                    input(type="number" placeholder="1" name="edition" min="1" max="15").form-control
+                a(class="button-link", href="/profile") Cancel
+                button(type="submit").btn.btn-primary Add Book
+        
+        
