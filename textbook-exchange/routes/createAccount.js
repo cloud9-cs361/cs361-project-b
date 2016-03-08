@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var assert = require('assert');
+var app = require('../app');
 
 function validateAccountCreation(name, email, password, password2, zip) {
   var errors = [];
@@ -72,19 +73,23 @@ function validateAccountCreation(name, email, password, password2, zip) {
 }
 
 function validateAgainstDB(email, usersCollection, callback) {
-  
   usersCollection.find({"email": email}, function (err, docs){
     
     var errors = [];
     assert.equal(err, null);
-    
-    //***Currently testing this.
-    if (docs != null) {
+
+    // currentling working
+    if (docs.length != 0) {
+      console.error("Trying to create an account with an email that already exists");
+      console.log(docs);
       errors.push('Account already exists for this email.');
+    }
+    else {
+      console.info("New user created: " + email);
     }
     
     callback(errors);
-  });
+    });
 }
 
 
@@ -94,14 +99,22 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res) {
-  var errors = validateAccountCreation(req.body.name, req.body.email, req.body.password, req.body.password2, req.body.zip);
+  var name = req.body.name;
+  var email = req.body.email;
+  var pw = req.body.password;
+  var pw2 = req.body.password2;
+  var zip = req.body.zip;
+  var db = req.app.get('db');
+  var usersCollection = db.get('users');
   
-  validateAgainstDB(req.body.email, req.app.db.get('users'), function (dbErrors) {
+  var errors = validateAccountCreation(name, email, pw, pw2, zip);
+  
+  validateAgainstDB(email, usersCollection, function (dbErrors) {
     
     errors = errors.concat(dbErrors);
     
     if (errors.length == 0) {
-      // write book info to database
+      // write user info to database
       var usersCollection = req.app.db.get('users');
       usersCollection.insert({
         'email': req.body.email, 
@@ -111,6 +124,8 @@ router.post('/', function(req, res) {
       }, function (err, doc) {
         if (err) {
           // If there was a problem adding account info to database, return error
+          console.log("ERROR");
+          console.log(err);
           res.send("There was a problem adding your account information to the database.");
         } else {
           // Add name and email to session
