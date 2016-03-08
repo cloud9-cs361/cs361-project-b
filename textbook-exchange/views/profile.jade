@@ -22,4 +22,9 @@ block content
     div.container
         div.jumbotron
             h2 Book List
+                if userBooks
+                    each book in userBooks
+                        div
+                            ISBN: #{book.isbn} TITLE: #{book.title} AUTHOR: #{book.author} EDITION: #{book.edition}
+                        
             a.btn.btn-primary(href="/addbook") Add Book

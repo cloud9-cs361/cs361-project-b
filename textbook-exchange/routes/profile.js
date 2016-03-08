@@ -14,24 +14,58 @@ router.get('/', function(req, res, next) {
     context.email = email;
     console.log(name);
     console.log(email);
-    fetchUserBooks(db, function(userBooks) {
-        
-        if (userBooks.length == 0) {
+    fetchUserBooks(db, email, function(userBooks) {
+        if (userBooks == null || userBooks.length == 0) {
             console.log("Not including books");
             res.render('profile', context);
         } 
         else {
-            context.books = userBooks;
+            context.userBooks = userBooks;
+            console.log(userBooks);
             res.render('profile', context);
         }
     });
     
 });
 
-function fetchUserBooks(db, callback) {
-    var userBooks = db.get('book_instance');
-    callback({
-        'testcode':"testing"
+function fetchUserBooks(db, email, callback) {
+    var bookInstances = db.get('book_instance');
+    var users = db.get('users');
+    var books = db.get('book');
+    
+    users.find({'email':email}, function(err, user) {
+        if (err) console.log(err);
+        
+        // found user..
+        if (user.length != 0) {
+            bookInstances.find({'user_id':user[0]._id}, function(err, instances) {
+                 if (err) console.log(err);
+                 
+                 // found book instances for user ....
+                 if (instances.length != 0) {
+                     var book_ids = [];
+                     // build list of book_ids
+                     for (var i = 0; i < instances.length; i++) {
+                         book_ids.push(instances[i].book_id);
+                     }
+                     var userBooks = [];
+                     books.find({
+                        '_id': { $in: book_ids } 
+                     }, function(err, book) {
+                         if (err) console.log(err);
+                         userBooks.push(book);
+                         callback(userBooks[0]);
+                     });
+                 }
+                 else {
+                     // if we have no instances
+                     callback(null);
+                 }
+            });
+        }
+        else {
+            callback(null);
+        }
     });
 }
 

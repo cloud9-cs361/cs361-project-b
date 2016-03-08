@@ -35,6 +35,7 @@ router.post('/',function(req,res){
               
             /* Now get user_id of current user */
             getUserId(req.session.email, db, function(user_id) {
+                /* Now insert new book instance with user_id, book_id, price */
                 insertBookInstance(book_id, user_id, price, db, function(err) {
                     if (err == null) {
                         res.redirect('/profile');
