@@ -9,6 +9,7 @@
 
 # Medimum Priority (code structure, helpful items, design, etc.)
 * Improve erorr checking in addbook.js
+* Adding a book needs to allow doubles for price
 
 # Low Priority (non-critical features that would be good to implement)
 
