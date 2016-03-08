@@ -3,9 +3,12 @@
 
 
 # Bugs
-
+* Currently '<' and '>' are surrounding first entry in book list in profile view, likely a result of the query to obtain a user's books?
 
 # High Priority
+* Implement searching for books
+* Implement searching for books within a proximity
+* Fix displaying books in user profile and include price
 
 # Medimum Priority (code structure, helpful items, design, etc.)
 * Improve erorr checking in addbook.js
