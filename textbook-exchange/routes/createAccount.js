@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var assert = require('assert');
-var app = require('../app');
 
 function validateAccountCreation(name, email, password, password2, zip) {
   var errors = [];
