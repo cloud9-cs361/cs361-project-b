@@ -83,10 +83,7 @@ function validateAgainstDB(email, usersCollection, callback) {
       console.log(docs);
       errors.push('Account already exists for this email.');
     }
-    else {
-      console.info("New user created: " + email);
-    }
-    
+
     callback(errors);
     });
 }
@@ -100,13 +97,13 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res) {
   var name = req.body.name;
   var email = req.body.email;
-  var pw = req.body.password;
-  var pw2 = req.body.password2;
+  var password = req.body.password;
+  var password2 = req.body.password2;
   var zip = req.body.zip;
   var db = req.app.get('db');
   var usersCollection = db.get('users');
   
-  var errors = validateAccountCreation(name, email, pw, pw2, zip);
+  var errors = validateAccountCreation(name, email, password, password2, zip);
   
   validateAgainstDB(email, usersCollection, function (dbErrors) {
     
@@ -114,12 +111,12 @@ router.post('/', function(req, res) {
     
     if (errors.length == 0) {
       // write user info to database
-      var usersCollection = req.app.db.get('users');
+      var usersCollection = db.get('users');
       usersCollection.insert({
-        'email': req.body.email, 
-        'name': req.body.name, 
-        'password': req.body.password, // should be hashed
-        'zip': req.body.zip
+        'email': email, 
+        'name': name, 
+        'password': password, // should be hashed
+        'zip': zip
       }, function (err, doc) {
         if (err) {
           // If there was a problem adding account info to database, return error
@@ -128,8 +125,9 @@ router.post('/', function(req, res) {
           res.send("There was a problem adding your account information to the database.");
         } else {
           // Add name and email to session
-          req.session.name = req.body.name;
-          req.session.email = req.body.email;
+          console.info("New user created: " + email);
+          req.session.name = name;
+          req.session.email = email;
           res.redirect('/profile');
         }
       });

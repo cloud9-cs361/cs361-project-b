@@ -23,7 +23,10 @@ block content
                 div.form-group
                     label Edition
                     input(type="number" placeholder="1" name="edition" min="1" max="15").form-control
-                a(class="button-link", href="/profile") Cancel
+                div.form-group
+                    label Price
+                    input(type="number" placeholder="$" name="price").form-control
+                a(class="button-link", href="/addBook") Cancel
                 button(type="submit").btn.btn-primary Add Book
         
         
