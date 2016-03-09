@@ -13,25 +13,49 @@ router.post('/',function(req,res){
     var name = req.session.name;
     var email = req.session.email;
     var zip = req.session.zip;
+    var searchZip = req.body.zipCode;
     var searchKeyword = req.body.searchKeyword;
 
     var bookInstances = db.get('book_instance');
     var users = db.get('users');
-    var errors = validateSearch(searchKeyword,zip);
+    
+    var errors;
+    
+    if (searchZip == undefined) {
+        errors = validateSearch(searchKeyword,zip);
+    }
+    else {
+        errors = validateSearch(searchKeyword, searchZip);
+    }
     
     /*Search for the Book or Report Error to User*/
     if (errors.length == 0) {
-        findBooksByKeyword(searchKeyword, function(foundBooks) {
-            if (foundBooks != undefined) {
-                var context = {};
-                context.foundBooks = foundBooks;
-                res.render('search', context);
-            }
-            else {
-                errors.push("No match found");
-                res.render('search', {errors: errors});
-            }
-        });
+        if (searchZip == undefined) {
+            findBooksByKeyword(searchKeyword, function(foundBooks) {
+                if (foundBooks != undefined) {
+                    var context = {};
+                    context.foundBooks = foundBooks;
+                    res.render('search', context);
+                }
+                else {
+                    errors.push("No match found");
+                    res.render('search', {errors: errors});
+                }
+            });
+        }
+        else {
+            findBooksByKeywordAndZip(searchKeyword, searchZip, function(foundBooks) {
+                if (foundBooks != undefined) {
+                    var context = {};
+                    context.foundBooks = foundBooks;
+                    res.render('search', context);
+                } 
+                else {
+                    errors.push("No books found with this zip code: %s", searchZip);
+                    res.render('search', {errors:errors});
+                }
+            });
+        }
     }
     else{
         res.render('search', {errors: errors});
@@ -65,6 +89,33 @@ function findBooksByKeyword(keyword, callback) {
         {'book.author' : {$regex: keyword, $options: 'i'}},
         {'user.zip' : {$regex: keyword, $options: 'i'}}
         ]},
+        
+        function(err, books) {
+            if (err) console.log(err);
+            if (books.length != 0) {
+                for (var i = 0; i < books.length; i++) {
+                    foundBooks.push(books[i]);
+                }
+                callback(foundBooks);
+            }
+            else {
+                callback(null);
+            }
+        }
+    );
+}
+
+function findBooksByKeywordAndZip(keyword, zip, callback) {
+    var bookInstances = db.get('book_instance');
+    var foundBooks = [];
+    bookInstances.find({
+        $and: [
+            {$or: [
+                {'book.title': {$regex: keyword, $options: 'i'}}, 
+                {'book.isbn' : {$regex: keyword, $options: 'i'}},
+                {'book.author' : {$regex: keyword, $options: 'i'}}]},
+            {'user.zip' : {$regex: zip, $options: 'i'}}
+        ]}, 
         
         function(err, books) {
             if (err) console.log(err);
