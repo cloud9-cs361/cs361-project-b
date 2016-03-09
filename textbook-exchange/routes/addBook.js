@@ -49,44 +49,73 @@ router.post('/',function(req,res){
     }
 });
 
-function insertBookInstance(book, user, price, db, callback) {
-    var book_instances = db.get('book_instance');
-    var book_instance = {
-        'book_id':book._id,
-        'user_id':user._id,
-        'book':book,
-        'user' : {
-            'email':user.email,
-            'name':user.name,
-            'zip': user.zip,
-            '_id':user._id
-        },
-        'price':price
-    };
-    book_instances.insert(book_instance, function(err, newInstance) {
-       if (err) {
-           console.log("ERROR INSERTING BOOK_INSTANCE: " + err);
-           callback(err);
-       }
-       else {
-           console.log("SUCCESS");
-           callback(null);
-       }
-    });
+function validateBookInfo(book) {
+    var errors = [];
+    
+    if (book.isbn == undefined || book.isbn.length == 0) {
+        errors.push('ISBN is required.');
+    }
+    else {
+        var isbnL = book.isbn.length;
+        if ( book.isbn.length == 14) {
+             book.isbn = remove_isbn13_dash(book.isbn);
+        }
+        if (!isNumber(book.isbn)) {
+            errors.push('Not a valid ISBN value');
+            errors.push('Format must be (ISBN10) ########## or (ISBN13) ###-##########')
+        }
+        else if (book.isbn.length != 10 && book.isbn.length != 13) {
+            errors.push('ISBN-10 or ISBN-13 must be given');
+            errors.push('ISBN-10 will be converted to ISBN-13');
+        }
+        else {
+            if (book.isbn.length == 10) {
+                book.isbn = convert_isbn10_to_isbn13(book.isbn);
+            }
+        }
+        
+    }
+    
+    if (book.title == undefined || book.title.length == 0) {
+        errors.push('Title is required');
+    }
+    
+    if (book.author == undefined || book.author.length == 0) {
+        errors.push('Author is required');        
+    }
+    
+    if (book.edition == undefined || book.edition.length == 0) {
+        errors.push('Edition is required');
+    }
+    return errors;
 }
 
-function getUser(email, db, callback) {
-    var users = db.get('users');
-    
-    users.findOne({'email': email}, function(err, user) {
-        if (err) {
-            console.log(err);
-        }
+function remove_isbn13_dash(isbn13) {
+    return isbn13.replace('-','');
+}
 
-        if (user.length != 0) {
-            callback(user);
+function convert_isbn10_to_isbn13(isbn10) {
+    var isbn13 = "978";
+    isbn13 += isbn10.substr(0, 9);
+    var times3 = false;
+    var sum = 0;
+    for (var i = 0; i < isbn13.length; i++) {
+        var digit = parseInt(isbn13[i]);
+        if (times3) {
+            digit *= 3;
         }
-    });
+        sum += digit;
+        times3 = !times3;
+        
+    }
+    sum = 10 - (sum % 10);
+    isbn13 += sum;
+    return isbn13;
+}
+
+// source: http://stackoverflow.com/a/9716488/679716
+function isNumber(isbn) {
+    return (!isNaN(parseFloat(isbn)) && isFinite(isbn));
 }
 
 function insertOrGetBookId(book, books, callback) {
@@ -115,26 +144,44 @@ function insertOrGetBookId(book, books, callback) {
     });
 }
 
+function getUser(email, db, callback) {
+    var users = db.get('users');
+    
+    users.findOne({'email': email}, function(err, user) {
+        if (err) {
+            console.log(err);
+        }
 
-function validateBookInfo(book) {
-    var errors = [];
-    
-    if (book.isbn == undefined || book.isbn.length == 0) {
-        errors.push('ISBN is required.');
-    }
-    
-    if (book.title == undefined || book.title.length == 0) {
-        errors.push('Title is required');
-    }
-    
-    if (book.author == undefined || book.author.length == 0) {
-        errors.push('Author is required');        
-    }
-    
-    if (book.edition == undefined || book.edition.length == 0) {
-        errors.push('Edition is required');
-    }
-    return errors;
+        if (user.length != 0) {
+            callback(user);
+        }
+    });
+}
+
+function insertBookInstance(book, user, price, db, callback) {
+    var book_instances = db.get('book_instance');
+    var book_instance = {
+        'book_id':book._id,
+        'user_id':user._id,
+        'book':book,
+        'user' : {
+            'email':user.email,
+            'name':user.name,
+            'zip': user.zip,
+            '_id':user._id
+        },
+        'price':price
+    };
+    book_instances.insert(book_instance, function(err, newInstance) {
+       if (err) {
+           console.log("ERROR INSERTING BOOK_INSTANCE: " + err);
+           callback(err);
+       }
+       else {
+           console.log("SUCCESS");
+           callback(null);
+       }
+    });
 }
 
 module.exports = router;

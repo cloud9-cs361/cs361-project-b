@@ -13,7 +13,7 @@ block content
             form(name="addbook" method="post" action="/addBook")
                 div.form-group
                     label ISBN
-                    input(type="text" placeholder="ISBN" name="isbn").form-control
+                    input(type="text" placeholder="ISBN" name="isbn" min="10" max="14").form-control
                 div.form-group
                     label Title
                     input(type="text" placeholder="Title" name="title").form-control

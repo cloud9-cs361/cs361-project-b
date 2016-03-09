@@ -26,7 +26,7 @@ router.post('/', function(req, res) {
 function validateLogin(email, password) {
   var errors = [];
   // email validation
-  if (email == undefined || email.length == 0 || !(email.includes('@') && email.includes('.'))) {
+  if (email == undefined || email.length == 0 || !(email.indexOf('@') > -1 && email.indexOf('.') > -1)) {
     errors.push('Valid email address is required.');
   }
   // password validation
