@@ -1,11 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var dbID = require('mongodb').ObjectID;
+var app = require('../app');
+var db = app.dbo;
 
 /* GET profile page. */
 router.get('/', function(req, res, next) {
-    var db = req.app.get('db');
-
     var context = {};
     var name = req.session.name;
     var email = req.session.email;
@@ -15,7 +14,7 @@ router.get('/', function(req, res, next) {
     context.email = email;
     console.log(name);
     console.log(email);
-    fetchUserBooks(db, email, function(userBooks) {
+    fetchUserBooks(email, function(userBooks) {
         if (userBooks == null || userBooks.length == 0) {
             console.log("No books found for: %s", email);
             res.render('profile', context);
@@ -28,7 +27,7 @@ router.get('/', function(req, res, next) {
     
 });
 
-function fetchUserBooks(db, email, callback) {
+function fetchUserBooks(email, callback) {
     var bookInstances = db.get('book_instance');
     var users = db.get('users');
     var books = db.get('book');

@@ -3,7 +3,6 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-
   var context = {};
   if (!req.session.name){
     res.render('index');

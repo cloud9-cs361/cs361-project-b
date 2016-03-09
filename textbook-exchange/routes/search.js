@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var app = require('../app');
+var db = app.dbo;
 
 /* GET search page. */
 router.get('/', function(req, res, next) {
@@ -7,7 +9,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/',function(req,res){
-    var db = req.app.get('db');
+    
     var name = req.session.name;
     var email = req.session.email;
     var zip = req.session.zip;
@@ -19,11 +21,10 @@ router.post('/',function(req,res){
     
     /*Search for the Book or Report Error to User*/
     if (errors.length == 0) {
-        findBooksByKeyword(bookInstances, searchKeyword, function(foundBooks) {
+        findBooksByKeyword(searchKeyword, function(foundBooks) {
             if (foundBooks != undefined) {
                 var context = {};
                 context.foundBooks = foundBooks;
-                console.log(foundBooks);
                 res.render('search', context);
             }
             else {
@@ -40,7 +41,6 @@ router.post('/',function(req,res){
 
 /*Check the user has input search terms*/
 function validateSearch(searchKeyword,zipCode){
-    console.log(zipCode);
     var errors = [];
     
     // searchKeyword validation
@@ -56,7 +56,8 @@ function validateSearch(searchKeyword,zipCode){
     return errors;
 };
 
-function findBooksByKeyword(bookInstances, keyword, callback) {
+function findBooksByKeyword(keyword, callback) {
+    var bookInstances = db.get('book_instance');
     var foundBooks = [];
     bookInstances.find({ $or: [
         {'book.title': {$regex: keyword, $options: 'i'}}, 
@@ -80,40 +81,54 @@ function findBooksByKeyword(bookInstances, keyword, callback) {
     );
 }
 
-function findBooksByTitle(bookInstances, keyword, callback) {
-    var foundBooks = [];
-    bookInstances.find({'book.title': {$regex: keyword, $options: 'i'}},
-        function(err, books) {
-            if (err) console.log(err);
-            if (books.length != 0) {
-                for (var i = 0; i < books.length; i++) {
-                    foundBooks.push(books[i]);
-                }
-                callback(foundBooks);
-            }
-            else {
-                callback(null);
-            }
-        }
-    );
+function findBooksByTitle(keyword, callback) {
+    findBooksHelper('book.title', keyword, function(res) {
+       callback(res); 
+    });
 }
 
-
-
-
-/*Retrieve Matching Search Results*/
-/*function fetchMatchISBN(searchKeyword){
-    var bookInstances = db.get('book_instance');
-    var users = db.get('users');
-    var books = db.get('book');
-    
-    books.find({'isbn':searchKeyword}, function(){
-
-            
+function findBooksByISBN(keyword, callback) {
+    findBooksHelper('book.isbn', keyword, function(res) {
+       callback(res); 
     });
-    
-}*/
+}
 
+function findBooksByAuthor(keyword, callback) {
+    findBooksHelper('book.author', keyword, function(res) {
+       callback(res); 
+    });
+}
+
+function findBooksByZip(keyword, callback) {
+    findBooksHelper('user.zip', keyword, function(res) {
+       callback(res); 
+    });
+}
+
+function findBooksHelper(fieldName, keyword, callback) {
+    var bookInstances = db.get('book_instance');
+    var params = {$regex: keyword, $options: 'i'};
+    var query = {};
+    query[fieldName] = params;
+    
+    var foundBooks = [];
+    bookInstances.find(query, function(err, books) {
+        if (err) console.log(err);
+        if (books.length != 0) {
+            for (var i = 0; i < books.length; i++) {
+                foundBooks.push(books[i]);
+            }
+            callback(foundBooks);
+        }
+        else {
+            callback(null);
+        }
+    });
+}
+
+exports.findBooksByTitle = findBooksByTitle;
+exports.findBooksByKeyword = findBooksByKeyword;
+exports.findBooksByISBN = findBooksByISBN;
+exports.findBooksByAuthor = findBooksByAuthor;
+exports.findBooksByZip = findBooksByZip;
 module.exports = router;
-module.exports.findBooksByTitle = findBooksByTitle;
-module.exports.findBooksByKeyword = findBooksByKeyword;

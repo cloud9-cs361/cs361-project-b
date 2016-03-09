@@ -1,4 +1,5 @@
 var express = require('express');
+var app = express();
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -6,6 +7,16 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
 var session = require('express-session');
+var db = require('monk')('localhost/bookr');
+app.db = db;
+app.set('db', db);
+/* use dbo in routes with:
+      var app = require('../app');
+      var db = app.dbo;
+*/
+exports.dbo = db;
+
+// set up routes
 var index = require('./routes/index');
 var users = require('./routes/users');
 var profile = require('./routes/profile');
@@ -14,12 +25,6 @@ var login = require('./routes/login');
 var logout = require('./routes/logout');
 var addBook = require('./routes/addBook');
 var search = require('./routes/search');
-var db = require('monk')('localhost/bookr');
-var app = express();
-app.db = db;
-
-app.set('db', db);
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
