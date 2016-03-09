@@ -43,19 +43,14 @@ function fetchUserBooks(db, email, callback) {
                  
                  // found book instances for user ....
                  if (instances.length != 0) {
-                     var book_ids = [];
+                     var userBooks = [];
                      // build list of book_ids
                      for (var i = 0; i < instances.length; i++) {
-                         book_ids.push(instances[i].book_id);
+                         if (instances[i].book != undefined) {
+                             userBooks.push(instances[i]);
+                         }
                      }
-                     var userBooks = [];
-                     books.find({
-                        '_id': { $in: book_ids } 
-                     }, function(err, book) {
-                         if (err) console.log(err);
-                         userBooks.push(book);
-                         callback(userBooks[0]);
-                     });
+                     callback(userBooks);
                  }
                  else {
                      // if we have no instances

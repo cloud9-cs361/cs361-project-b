@@ -19,13 +19,6 @@ var app = express();
 app.db = db;
 
 app.set('db', db);
-/*
-var collection = db.get('users');
-var something = collection.find({email: 'kristen@osu.com'}, function(err, docs) {
-  if (err) console.log(err);
-  console.log(docs);
-});
-*/
 
 
 // view engine setup

@@ -26,6 +26,11 @@ block content
                             th EDITION
                             th CONTACT USER
                     tbody
-//                        if userBooks
-//                            each book in userBooks
+                        each ub in userBooks
+                            tr.body
+                                td ub.book.isbn
+                                td ub.book.title
+                                td ub.book.author
+                                td ub.book.edition
+                                td ub.user.name
 

@@ -31,13 +31,15 @@ block content
                             th TITLE
                             th AUTHOR
                             th EDITION
+                            th PRICE
                     tbody
                         if userBooks
-                            each book in userBooks
+                            each entry in userBooks
                                 tr
-                                    td #{book.isbn}
-                                    td #{book.title}
-                                    td #{book.author}
-                                    td #{book.edition}
+                                    td #{entry.book.isbn}
+                                    td #{entry.book.title}
+                                    td #{entry.book.author}
+                                    td #{entry.book.edition}
+                                    td #{entry.price}
                         
             

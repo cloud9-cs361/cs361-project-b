@@ -3,54 +3,6 @@ var router = express.Router();
 
 /* GET search page. */
 router.get('/', function(req, res, next) {
-    var context = {};
-    
-    var db = req.app.get('db');
-    var name = req.session.name;
-    var email = req.session.email;
-    
-    var bookInstances = db.get('book_instance');
-    var users = db.get('users');
-    var books = db.get('book');
-    
-    var searchKeyword = req.body.searchKeyword;
-    var zipCode = req.body.zipCode;
-    var userBooks = [];
-    
-    
-    books.find({'title':req.body.searchKeyword}, function(err, books) {
-        if (err) console.log(err);
-        
-        // found user..
-        if (books.length != 0) {
-            for (var book in books) {
-                bookInstances.find({'book_id':book._id}, function(err, instances) {
-                if (err) console.log(err);
-                 
-                // found book instances for user ....
-                if (instances.length != 0) {
-                    var book_ids = [];
-                    // build list of book_ids
-                    for (var i = 0; i < instances.length; i++) {
-                        book_ids.push(instances[i].book_id);
-                    }
-                    books.find({
-                        '_id': { $in: book_ids } 
-                    }, function(err, book) {
-                        if (err) console.log(err);
-                        userBooks.push(book);
-                    });
-                 }
-            });
-                
-            }
-        }
-    });
-    
-    context.name = name;
-    context.email = email;
-    context.userbooks = userbooks;
-    
     res.render('search', context);
 });
 
@@ -90,11 +42,57 @@ function validateSearch(searchKeyword,zipCode){
 
 /*Search for the Book or Report Error to User*/
 router.post('/',function(req,res){
-    console.log("heasdfsadfre");
     var errors = validateSearch(req.body.searchKeyword,req.body.zipCode);
-    
+    //console.log(errors);
     if (errors.length == 0) {
-        res.render('search');
+        
+        var context = {};
+        
+        var db = req.app.get('db');
+        var name = req.session.name;
+        var email = req.session.email;
+        
+        
+        var bookInstances = db.get('book_instance');
+        var users = db.get('users');
+        var books = db.get('book');
+        
+        var searchKeyword = req.body.searchKeyword;
+        var zipCode = req.body.zipCode;
+        var userBooks = [];
+        books.find({'title': {$regex: req.body.searchKeyword}}, function(err, books) {
+            if (err) console.log(err);
+            if (books.length != 0) {
+                var bookids = [];
+                for (var book in books) {
+                    bookids.push(book._id)
+                }
+                bookInstances.find({'book_id': {"$in": bookids}}, function(err, instances) {
+                    if (err) console.log(err);
+                     
+                    if (instances.length != 0) {
+                        for (var instance in instances) {
+                        var userbook = {};
+                        users.find({'user_id':instance.user_id}, function(err,userbookuser) {
+                            if (err) console.log(err);
+                            userbook.user = userbookuser[0];
+                        });
+                        books.find({'book_id':instance.book_id}, function(err,userbookbook) {
+                            if (err) console.log(err);
+                            userbook.book = userbookbook[0];
+                        });
+                        userBooks.push(userbook)
+                        }
+                    }
+                });
+                    
+            }
+        });
+        
+        context.name = name;
+        context.email = email;
+        context.userbooks = userBooks;
+        res.render('search', context);
         /* Pull Matching Results from the Database*/
     }
     else{
