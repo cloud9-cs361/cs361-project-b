@@ -55,3 +55,26 @@
   border-radius: 8px;
   border: 10px;
 }
+
+.book_listing{
+  font-size: 1em;
+}
+
+table {
+  margin-top: 1em;
+  width: 100%;
+  
+}
+
+th {
+  background-color:  #3399CC;
+  color: white;
+}
+
+th, td {
+  padding: 1em;
+}
+
+tr:hover {
+  background-color: #A0A0A0;
+}

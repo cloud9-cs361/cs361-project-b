@@ -21,10 +21,23 @@ block content
         
     div.container
         div.jumbotron
-            h2 Book List
-                if userBooks
-                    each book in userBooks
-                        div
-                            ISBN: #{book.isbn} TITLE: #{book.title} AUTHOR: #{book.author} EDITION: #{book.edition}
-                        
+            h3 Book List
             a.btn.btn-primary(href="/addbook") Add Book
+            div.book_listing
+                table
+                    thead
+                        tr.head
+                            th ISBN
+                            th TITLE
+                            th AUTHOR
+                            th EDITION
+                    tbody
+                        if userBooks
+                            each book in userBooks
+                                tr
+                                    td #{book.isbn}
+                                    td #{book.title}
+                                    td #{book.author}
+                                    td #{book.edition}
+                        
+            
