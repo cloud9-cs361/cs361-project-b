@@ -31,12 +31,12 @@ router.post('/',function(req,res){
     }
     else {
         /* check database for book, if book exists then return id, if book does not exist then create book and return its id */
-        insertOrGetBookId(book, books, function(book_id) {
+        insertOrGetBookId(book, books, function(ourBook) {
               
-            /* Now get user_id of current user */
-            getUserId(req.session.email, db, function(user_id) {
+            /* Now get user from db current session */
+            getUser(req.session.email, db, function(user) {
                 /* Now insert new book instance with user_id, book, price */
-                insertBookInstance(book, user_id, price, db, function(err) {
+                insertBookInstance(ourBook, user, price, db, function(err) {
                     if (err == null) {
                         res.redirect('/profile');
                     }
@@ -49,11 +49,18 @@ router.post('/',function(req,res){
     }
 });
 
-function insertBookInstance(book, user_id, price, db, callback) {
+function insertBookInstance(book, user, price, db, callback) {
     var book_instances = db.get('book_instance');
     var book_instance = {
+        'book_id':book._id,
+        'user_id':user._id,
         'book':book,
-        'user_id':user_id,
+        'user' : {
+            'email':user.email,
+            'name':user.name,
+            'zip': user.zip,
+            '_id':user._id
+        },
         'price':price
     };
     book_instances.insert(book_instance, function(err, newInstance) {
@@ -68,16 +75,16 @@ function insertBookInstance(book, user_id, price, db, callback) {
     });
 }
 
-function getUserId(email, db, callback) {
+function getUser(email, db, callback) {
     var users = db.get('users');
     
-    users.find({'email': email}, function(err, docs) {
+    users.findOne({'email': email}, function(err, user) {
         if (err) {
             console.log(err);
         }
 
-        if (docs.length != 0) {
-            callback(docs[0]._id);
+        if (user.length != 0) {
+            callback(user);
         }
     });
 }
@@ -85,21 +92,24 @@ function getUserId(email, db, callback) {
 function insertOrGetBookId(book, books, callback) {
     var error = [];
 
-    books.find({"isbn": book.isbn}, function (err, docs){
+    books.findOne({"isbn": book.isbn}, function (err, existingBook){
         if (err) {
             console.log("Error in finding book: " + err);
         }
         
-        if (docs.length == 0) {
+        if (existingBook == undefined) {
             // insert book
             books.insert(book, function(err, newBook) {
                if (err) console.log(err);
-               callback(newBook._id) 
+               else {
+                   console.log("Inserting %j", newBook);
+                   callback(newBook);
+               }
             });
         }
         else {
             console.log("Book exists");
-            callback(docs[0]._id);
+            callback(existingBook);
         }
         
     });

@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var dbID = require('mongodb').ObjectID;
 
 /* GET profile page. */
 router.get('/', function(req, res, next) {
@@ -34,12 +35,12 @@ function fetchUserBooks(db, email, callback) {
 
     users.findOne({'email':email}, function(err, user) {
         if (err) console.log(err);
-        
+
         // found user..
-        if (user.length != 0) {
+        if (user != undefined) {
             bookInstances.find({'user_id':user._id}, function(err, instances) {
                  if (err) console.log(err);
-                 
+
                  // found book instances for user ....
                  if (instances.length != 0) {
                      var userBooks = [];

@@ -24,13 +24,17 @@ block content
                             th TITLE
                             th AUTHOR
                             th EDITION
+                            th PRICE
                             th CONTACT USER
                     tbody
-                        each ub in userBooks
-                            tr.body
-                                td ub.book.isbn
-                                td ub.book.title
-                                td ub.book.author
-                                td ub.book.edition
-                                td ub.user.name
+                        if foundBooks
+                            each entry in foundBooks
+                                tr.body
+                                    td #{entry.book.isbn}
+                                    td #{entry.book.title}
+                                    td #{entry.book.author}
+                                    td #{entry.book.edition}
+                                    td #{entry.price}
+                                    td #{entry.user.name}
+                                    
 
