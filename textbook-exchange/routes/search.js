@@ -42,7 +42,11 @@ function validateSearch(searchKeyword,zipCode){
 
 /*Search for the Book or Report Error to User*/
 router.post('/',function(req,res){
-    var errors = validateSearch(req.body.searchKeyword,req.body.zipCode);
+    var name = req.session.name;
+    var email = req.session.email;
+    var zip = req.session.zip;
+    
+    var errors = validateSearch(req.body.searchKeyword,zip);
     //console.log(errors);
     if (errors.length == 0) {
         

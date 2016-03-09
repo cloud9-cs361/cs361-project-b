@@ -16,12 +16,11 @@ router.get('/', function(req, res, next) {
     console.log(email);
     fetchUserBooks(db, email, function(userBooks) {
         if (userBooks == null || userBooks.length == 0) {
-            console.log("Not including books");
+            console.log("No books found for: %s", email);
             res.render('profile', context);
         } 
         else {
             context.userBooks = userBooks;
-            console.log(userBooks);
             res.render('profile', context);
         }
     });
@@ -32,13 +31,13 @@ function fetchUserBooks(db, email, callback) {
     var bookInstances = db.get('book_instance');
     var users = db.get('users');
     var books = db.get('book');
-    
-    users.find({'email':email}, function(err, user) {
+
+    users.findOne({'email':email}, function(err, user) {
         if (err) console.log(err);
         
         // found user..
         if (user.length != 0) {
-            bookInstances.find({'user_id':user[0]._id}, function(err, instances) {
+            bookInstances.find({'user_id':user._id}, function(err, instances) {
                  if (err) console.log(err);
                  
                  // found book instances for user ....
