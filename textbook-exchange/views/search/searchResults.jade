@@ -1,0 +1,23 @@
+div.search_results
+    h2 Search Results
+    table
+        thead
+            tr.head
+                th ISBN
+                th TITLE
+                th AUTHOR
+                th EDITION
+                th PRICE
+                th CONTACT USER
+                th ZIP CODE
+        tbody
+            if foundBooks
+                each entry in foundBooks
+                    tr.body(onclick="window.document.location = \"/purchase/book_id=#{entry._id}\";")
+                        td #{entry.book.isbn}
+                        td #{entry.book.title}
+                        td #{entry.book.author}
+                        td #{entry.book.edition}
+                        td #{entry.price}
+                        td #{entry.user.name}
+                        td #{entry.user.zip}

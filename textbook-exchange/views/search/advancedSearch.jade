@@ -1,0 +1,24 @@
+extends ../authLayout
+
+block content
+    // Check that user info is passed from login/create acccount
+    div.container
+        div.jumbotron
+            if errors
+                div.alert.alert-danger
+                    each error in errors
+                        div=error
+            form(method="post" action="/search/advancedSearch")
+                div.form-group
+                    input(type="text" placeholder="ISBN" name="isbn").form-control
+                div.form-group
+                    input(type="text" placeholder="Title" name="title").form-control
+                div.form-group
+                    input(type="text" placeholder="Author" name="author").form-control
+                div.form-group
+                    input(type="text" placeholder="Zip Code" name="zipCode").form-control
+                button(type="submit").btn.btn-primary Find Book
+            p
+                a.small(href="/profile") Return to Profile.
+
+            include searchResults.jade

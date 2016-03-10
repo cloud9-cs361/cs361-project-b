@@ -1,0 +1,26 @@
+extends authLayout
+
+block content
+    div.container
+        div.jumbotron
+            if instance
+                table
+                    tr
+                        th ISBN
+                        td #{instance.book.isbn}
+                    tr
+                        th TITLE
+                        td #{instance.book.title}
+                    tr
+                        th AUTHOR
+                        td #{instance.book.author}
+                    tr
+                        th EDITION
+                        td #{instance.book.edition}
+                    tr
+                        th PRICE
+                        td $#{instance.book.price}
+                    tr
+                        button.btn-default(href="#") Purchase
+            else
+                p No book selected.
