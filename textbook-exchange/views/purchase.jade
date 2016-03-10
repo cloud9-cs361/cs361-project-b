@@ -4,6 +4,11 @@ block content
     div.container
         div.jumbotron
             if instance
+                -function formatPrice(price){
+                    -price = parseInt(price).toFixed(2);
+                    -price = "$" + price;
+                    -return(price);
+                -}
                 table
                     tr
                         th ISBN
@@ -19,8 +24,10 @@ block content
                         td #{instance.book.edition}
                     tr
                         th PRICE
-                        td $#{instance.book.price}
+                        td #{formatPrice(instance.price)}
                     tr
-                        button.btn-default(href="#") Purchase
+                        td
+                        td
+                            button.btn.btn-primary(href="#") Purchase
             else
                 p No book selected.

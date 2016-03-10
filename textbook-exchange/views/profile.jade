@@ -34,11 +34,11 @@ block content
                             th PRICE
                     tbody
                         if userBooks
-                        -function formatPrice(price){
-                            -price = parseInt(price).toFixed(2);
-                            -price = "$" + price;
-                            -return(price);
-                        -}
+                            -function formatPrice(price){
+                                -price = parseInt(price).toFixed(2);
+                                -price = "$" + price;
+                                -return(price);
+                            -}
                             each entry in userBooks
                                 tr
                                     td #{entry.book.isbn}

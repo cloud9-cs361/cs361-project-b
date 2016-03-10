@@ -11,12 +11,12 @@ div.search_results
                 th CONTACT USER
                 th ZIP CODE
         tbody
-            if foundBook
-            -function formatPrice(price){
-                -price = parseInt(price).toFixed(2);
-                -price = "$" + price;
-                -return(price);
-            -}
+            if foundBooks
+                -function formatPrice(price){
+                    -price = parseInt(price).toFixed(2);
+                    -price = "$" + price;
+                    -return(price);
+                -}
                 each entry in foundBooks
                     tr.body(onclick="window.document.location = \"/purchase/book_id=#{entry._id}\";")
                         td #{entry.book.isbn}

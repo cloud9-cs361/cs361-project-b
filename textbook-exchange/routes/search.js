@@ -70,6 +70,7 @@ router.post('/',function(req,res){
                 if (foundBooks != undefined) {
                     var context = {};
                     context.foundBooks = foundBooks;
+                    console.log(context);
                     res.render('search/search', context);
                 }
                 else {
