@@ -11,7 +11,7 @@ function validateAccountCreation(name, email, password, password2, zip) {
   }
   
   // email validation
-  if (email == undefined || email.length == 0 || !(email.indexOf("@") > -1) && email.indexOf('.') > -1)) {
+  if (email == undefined || email.length == 0 || !(email.indexOf("@") > -1) && email.indexOf('.') > -1) {
     errors.push('Valid email address is required.');
   }
   
