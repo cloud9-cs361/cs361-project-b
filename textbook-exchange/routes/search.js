@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var app = require('../app');
 var db = app.dbo;
+var bookFunctions = require('./addBook');
 
 /* GET search page. */
 router.get('/', function(req, res, next) {
@@ -9,16 +10,10 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/',function(req,res){
-    
-    var name = req.session.name;
-    var email = req.session.email;
     var zip = req.session.zip;
     var searchZip = req.body.zipCode;
     var searchKeyword = req.body.searchKeyword;
 
-    var bookInstances = db.get('book_instance');
-    var users = db.get('users');
-    
     var errors;
     
     if (searchZip == undefined) {
@@ -27,7 +22,11 @@ router.post('/',function(req,res){
     else {
         errors = validateSearch(searchKeyword, searchZip);
     }
-    
+    // if keyword is ISBN then just throw ISBN13 into fuzzy search
+    if (bookFunctions.isISBN(searchKeyword)) {
+        searchKeyword = bookFunctions.conformISBN(searchKeyword);
+        console.log("ISBN Search detected: %s", searchKeyword);
+    }
     /*Search for the Book or Report Error to User*/
     if (errors.length == 0) {
         if (searchZip == undefined) {

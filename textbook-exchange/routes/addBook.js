@@ -56,8 +56,7 @@ function validateBookInfo(book) {
         errors.push('ISBN is required.');
     }
     else {
-        var isbnL = book.isbn.length;
-        if ( book.isbn.length == 14) {
+        if (book.isbn.length == 14) {
              book.isbn = remove_isbn13_dash(book.isbn);
         }
         if (!isNumber(book.isbn)) {
@@ -88,6 +87,33 @@ function validateBookInfo(book) {
         errors.push('Edition is required');
     }
     return errors;
+}
+
+function isISBN(keyword) {
+    console.log("Checking if isISBN [%s]", keyword);
+    var temp = keyword;
+    if (temp.length != 10 && temp.length != 13 && temp.length != 14) {
+        return false;
+    }
+    if (temp.length == 14) {
+        temp = remove_isbn13_dash(temp);
+    }
+    if (!isNumber(temp)) {
+        return false;
+    }
+    if (temp.length == 10 || temp.length == 13) {
+        return true;
+    }
+}
+
+function conformISBN(isbn) {
+    if (isbn.length == 14) {
+        isbn = remove_isbn13_dash(isbn);
+    }
+    else if (isbn.length == 10) {
+        isbn = convert_isbn10_to_isbn13(isbn);
+    }
+    return isbn;
 }
 
 function remove_isbn13_dash(isbn13) {
@@ -186,3 +212,7 @@ function insertBookInstance(book, user, price, db, callback) {
 
 module.exports = router;
 module.exports.validateBookInfo = validateBookInfo;
+module.exports.isISBN = isISBN;
+module.exports.remove_isbn13_dash = remove_isbn13_dash;
+module.exports.convert_isbn10_to_isbn13 = remove_isbn13_dash;
+module.exports.conformISBN = conformISBN;
