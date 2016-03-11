@@ -46,6 +46,7 @@ function fetchUserBooks(email, callback) {
                      // build list of book_ids
                      for (var i = 0; i < instances.length; i++) {
                          if (instances[i].book != undefined) {
+                             
                              userBooks.push(instances[i]);
                          }
                      }

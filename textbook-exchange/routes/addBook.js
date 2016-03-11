@@ -14,6 +14,7 @@ router.post('/',function(req,res){
     var author = req.body.author;
     var edition = req.body.edition;
     var price = req.body.price;
+    var status = "open";
     var db = req.app.get('db');
     var books = db.get('book');
     var book = {
@@ -36,7 +37,7 @@ router.post('/',function(req,res){
             /* Now get user from db current session */
             getUser(req.session.email, db, function(user) {
                 /* Now insert new book instance with user_id, book, price */
-                insertBookInstance(ourBook, user, price, db, function(err) {
+                insertBookInstance(ourBook, user, price, status, db, function(err) {
                     if (err == null) {
                         res.redirect('/profile');
                     }
@@ -184,7 +185,7 @@ function getUser(email, db, callback) {
     });
 }
 
-function insertBookInstance(book, user, price, db, callback) {
+function insertBookInstance(book, user, price, status, db, callback) {
     var book_instances = db.get('book_instance');
     var book_instance = {
         'book_id':book._id,
@@ -196,7 +197,8 @@ function insertBookInstance(book, user, price, db, callback) {
             'zip': user.zip,
             '_id':user._id
         },
-        'price':price
+        'price':price,
+        'status':status
     };
     book_instances.insert(book_instance, function(err, newInstance) {
        if (err) {

@@ -70,7 +70,6 @@ router.post('/',function(req,res){
                 if (foundBooks != undefined) {
                     var context = {};
                     context.foundBooks = foundBooks;
-                    console.log(context);
                     res.render('search/search', context);
                 }
                 else {
@@ -107,9 +106,9 @@ function validateSearch(searchKeyword,zipCode){
     if (searchKeyword == undefined || searchKeyword.length == 0) {
         errors.push('Search Terms are required.');
     }
-    
+
     // ZipCode validation
-    if (zipCode == undefined || zipCode.length != 5) {
+    if (zipCode == undefined || String(zipCode).length != 5) {
         errors.push('Zipcode is required.');
     }
     

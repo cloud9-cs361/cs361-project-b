@@ -21,7 +21,7 @@ block content
         
     div.container
         div.jumbotron
-            h3 My Books
+            h3 Books to Trade/Sell
             a.btn.btn-primary(href="/addbook") Add Book
             div.book_listing
                 table
@@ -32,6 +32,7 @@ block content
                             th AUTHOR
                             th EDITION
                             th PRICE
+                            th STATUS
                     tbody
                         if userBooks
                             -function formatPrice(price){
@@ -46,5 +47,17 @@ block content
                                     td #{entry.book.author}
                                     td #{entry.book.edition}
                                     td #{formatPrice(entry.price)}
-                        
+                                    td #{entry.status}
+            h3 Requested Books
+            div.book_listing
+                table
+                    thead
+                        tr.head
+                            th ISBN
+                            th TITLE
+                            th AUTHOR
+                            th EDITION
+                            th PRICE
+                            th STATUS
+
             
