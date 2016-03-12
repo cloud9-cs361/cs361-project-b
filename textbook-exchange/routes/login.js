@@ -15,6 +15,7 @@ router.post('/', function(req, res) {
       req.session.name = user.name;
       req.session.zip = user.zip;
       req.session.email = user.email;
+      req.session.user_id = user._id;
       res.redirect('/profile');
     }
     else {

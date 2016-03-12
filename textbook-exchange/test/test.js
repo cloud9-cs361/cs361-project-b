@@ -1,7 +1,17 @@
 var assert = require('assert');
 var createAccount = require('../routes/createAccount');
 var login = require('../routes/login');
+var addBook = require('../routes/addBook');
 var db = require('monk')('localhost/bookr');
+
+// check to see if browser supports startsWith()
+// if not, create it
+if (!String.prototype.startsWith) {
+    String.prototype.startsWith = function(searchString, position){
+      position = position || 0;
+      return this.substr(position, searchString.length) === searchString;
+  };
+}
 
 // Tests for Logging In
 describe('Validate Login', function() {
@@ -356,6 +366,422 @@ describe('Validate Creation of Account', function() {
     it('zip code is valid', function () {
       var errors = createAccount.validateAccountCreation('validname', 'good@email.com', 'validpA$$w0rd', 'validpA$$w0rd', '12345');
       var expectedErrors = [];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+  });
+});
+
+// Tests for Adding a Book
+describe('Validate Adding a Book', function() {
+  describe('isbn', function () {
+    it('isbn is provided by user', function () {
+      var isbn = '';
+      var title = 'Good Title';
+      var author = 'Good Author';
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [
+        error => error.includes("ISBN is required")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('isbn is not undefined', function () {
+      var isbn = undefined;
+      var title = 'Good Title';
+      var author = 'Good Author';
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [
+        error => error.includes("ISBN is required")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('isbn is a number', function () {
+      var isbn = 'contains1ttrs';
+      var title = 'Good Title';
+      var author = 'Good Author';
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [
+        error => error.includes("Not a valid ISBN value"),
+        error => error.includes("Format must be (ISBN10) ########## or (ISBN13) ###-##########")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('isbn is 10 or 13 digits long', function () {
+      var isbn = '123456789012';
+      var title = 'Good Title';
+      var author = 'Good Author';
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [
+        error => error.includes("ISBN-10 or ISBN-13 must be given"),
+        error => error.includes("ISBN-10 will be converted to ISBN-13")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('isbn13 starts with 978 or 979', function () {
+      var isbn = '1231615641529';
+      var title = 'Good Title';
+      var author = 'Good Author';
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      assert.equal(isbn.length == 13, true);
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [
+        error => error.includes("ISBN-13 must start with 978 or 979")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('isbn with 14 digits starts with 978 or 979', function () {
+      var isbn = '123-1615641529';
+      var title = 'Good Title';
+      var author = 'Good Author';
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      assert.equal(isbn.length == 14, true);
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [
+        error => error.includes("ISBN-13 must start with 978 or 979")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('isbn is valid 13 digit starting with 978', function () {
+      var isbn = '9781615641529';
+      var title = 'Good Title';
+      var author = 'Good Author';
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      assert.equal(isbn.length == 13, true);
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('isbn is valid 13 digit starting with 979', function () {
+      var isbn = '9791615641529';
+      var title = 'Good Title';
+      var author = 'Good Author';
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      assert.equal(isbn.length == 13, true);
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('isbn is valid 14 digit starting with 978', function () {
+      var isbn = '978-1615641529';
+      var title = 'Good Title';
+      var author = 'Good Author';
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      assert.equal(isbn.length == 14, true);
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('isbn is valid 14 digit starting with 979', function () {
+      var isbn = '979-1615641529';
+      var title = 'Good Title';
+      var author = 'Good Author';
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      assert.equal(isbn.length == 14, true);
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('isbn is valid 10 digit', function () {
+      var isbn = '1234567890';
+      var title = 'Good Title';
+      var author = 'Good Author';
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      assert.equal(isbn.length == 10, true);
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+  });
+  describe('title', function () {
+    it('title is provided by user', function () {
+      var isbn = '9781615641529';
+      var title = '';
+      var author = 'Good Author';
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [
+        error => error.includes("Title is required")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('title is not undefined', function () {
+      var isbn = '9781615641529';
+      var title = undefined;
+      var author = 'Good Author';
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [
+        error => error.includes("Title is required")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+  });
+  describe('author', function () {
+    it('author is provided by user', function () {
+      var isbn = '9781615641529';
+      var title = 'Good Title';
+      var author = '';
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [
+        error => error.includes("Author is required")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('author is not undefined', function () {
+      var isbn = '9781615641529';
+      var title = 'Good Title';
+      var author = undefined;
+      var edition = '3';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [
+        error => error.includes("Author is required")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+  });
+  describe('edition', function () {
+    it('edition is provided by user', function () {
+      var isbn = '9781615641529';
+      var title = 'Good Title';
+      var author = 'Good Author';
+      var edition = '';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [
+        error => error.includes("Edition is required")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('edition is not undefined', function () {
+      var isbn = '9781615641529';
+      var title = 'Good Title';
+      var author = 'Good Author';
+      var edition = undefined;
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [
+        error => error.includes("Edition is required")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('edition is a number', function () {
+      var isbn = '9781615641529';
+      var title = 'Good Title';
+      var author = 'Good Author';
+      var edition = 'a';
+      var book = {
+        'isbn': isbn,
+        'title': title,
+        'author': author,
+        'edition': edition
+      };
+      var errors = addBook.validateBookInfo(book);
+      var expectedErrors = [
+        error => error.includes("Edition must be a number")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+  });
+  describe('isISBN', function () {
+    it('isbn is not 10, 13, or 14 digits long', function () {
+      var isbn = '978161564152';
+      var valid = addBook.isISBN(isbn);
+      assert.equal(valid, false);
+    });
+    it('isbn is only digits', function () {
+      var isbn = 'contains1ttrs';
+      var valid = addBook.isISBN(isbn);
+      assert.equal(valid, false);
+    });
+    it('isbn is 14 digits long', function () {
+      var isbn = '978-1615641529';
+      var valid = addBook.isISBN(isbn);
+      assert.equal(valid, true);
+    });
+    it('isbn is 13 digits long', function () {
+      var isbn = '9781615641529';
+      var valid = addBook.isISBN(isbn);
+      assert.equal(valid, true);
+    });
+    it('isbn is 10 digits long', function () {
+      var isbn = '1615641521';
+      var valid = addBook.isISBN(isbn);
+      assert.equal(valid, true);
+    });
+  });
+  describe('conformISBN', function () {
+    it('isbn is converted from 14 digits to 13 digits', function () {
+      var isbn = '978-1615641529';
+      assert.equal(isbn.length == 14, true);
+      assert.equal(isbn.indexOf("-") > -1, true);
+      isbn = addBook.conformISBN(isbn);
+      assert.equal(isbn.length == 13, true);
+      assert.equal(isbn.indexOf("-") > -1, false);
+    });
+    it('isbn is converted from 10 digits to 13 digits', function () {
+      var isbn = '1615641521';
+      assert.equal(isbn.length == 10, true);
+      isbn = addBook.conformISBN(isbn);
+      assert.equal(isbn == '9781615641529', true);
+    });
+  });
+  describe('price', function () {
+    it('price is provided by user', function () {
+      var price = NaN;
+      var errors = addBook.validatePrice(price);
+      var expectedErrors = [
+        error => error.includes("Price is required")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('price is not undefined', function () {
+      var price = undefined;
+      var errors = addBook.validatePrice(price);
+      var expectedErrors = [
+        error => error.includes("Price is required")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('price is a number', function () {
+      var price = 'a';
+      var errors = addBook.validatePrice(price);
+      var expectedErrors = [
+        error => error.includes("Price must be a number")
+      ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('price is a positive number', function () {
+      var price = '-1';
+      var errors = addBook.validatePrice(price);
+      var expectedErrors = [
+        error => error.includes("Price must be a positive number")
+      ];
       assert.equal(expectedErrors.length, errors.length, errors.toString());
       expectedErrors.every(expected => errors.some(expected));
     });

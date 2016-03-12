@@ -11,7 +11,7 @@ function validateAccountCreation(name, email, password, password2, zip) {
   }
   
   // email validation
-  if (email == undefined || email.length == 0 || !(email.indexOf("@") > -1) && email.indexOf('.') > -1) {
+  if (email == undefined || email.length == 0 || !(email.indexOf("@") > -1 && email.indexOf('.') > -1)) {
     errors.push('Valid email address is required.');
   }
   
@@ -67,8 +67,6 @@ function validateAccountCreation(name, email, password, password2, zip) {
   }
   
   return errors;
-
-  
 }
 
 function validateAgainstDB(email, usersCollection, callback) {
@@ -77,7 +75,7 @@ function validateAgainstDB(email, usersCollection, callback) {
     var errors = [];
     assert.equal(err, null);
 
-    // currentling working
+    // currently working
     if (docs.length != 0) {
       console.error("Trying to create an account with an email that already exists");
       console.log(docs);

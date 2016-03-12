@@ -1,6 +1,15 @@
 var express = require('express');
 var router = express.Router();
 
+// check to see if browser supports startsWith()
+// if not, create it
+if (!String.prototype.startsWith) {
+    String.prototype.startsWith = function(searchString, position){
+      position = position || 0;
+      return this.substr(position, searchString.length) === searchString;
+  };
+}
+
 /* GET add book form */
 router.get('/', function(req, res, next){
     console.log(req.session);
@@ -26,6 +35,8 @@ router.post('/',function(req,res){
     
     /* validate information to see if possible valid book */    
     var errors = validateBookInfo(book);
+    var priceErrors = validatePrice(price);
+    errors = errors.concat(priceErrors);
     console.log(errors);
     if (errors.length > 0) {
         res.render('addBook', {errors: errors}); // If the book is invalid should be only time we display an error
@@ -54,7 +65,7 @@ function validateBookInfo(book) {
     var errors = [];
     
     if (book.isbn == undefined || book.isbn.length == 0) {
-        errors.push('ISBN is required.');
+        errors.push('ISBN is required');
     }
     else {
         if (book.isbn.length == 14) {
@@ -68,12 +79,17 @@ function validateBookInfo(book) {
             errors.push('ISBN-10 or ISBN-13 must be given');
             errors.push('ISBN-10 will be converted to ISBN-13');
         }
+        else if (book.isbn.length == 13 && !(book.isbn.startsWith('978') || book.isbn.startsWith('979'))) {
+            errors.push('ISBN-13 must start with 978 or 979');
+        }
         else {
             if (book.isbn.length == 10) {
                 book.isbn = convert_isbn10_to_isbn13(book.isbn);
+                if (book.isbn.length == 13 && !(book.isbn.startsWith('978') || book.isbn.startsWith('979'))) {
+                    errors.push('ISBN-13 must start with 978 or 979');
+                }
             }
         }
-        
     }
     
     if (book.title == undefined || book.title.length == 0) {
@@ -87,6 +103,30 @@ function validateBookInfo(book) {
     if (book.edition == undefined || book.edition.length == 0) {
         errors.push('Edition is required');
     }
+    else {
+        if (!isNumber(book.edition)) {
+            errors.push('Edition must be a number');
+        }
+    }
+    
+    return errors;
+}
+
+function validatePrice(price) {
+    var errors = [];
+    
+    if (price == undefined || !isNaN(price)) {
+        errors.push('Price is required');
+    }
+    else {
+        if (!isNumber(price)) {
+            errors.push('Price must be a number');
+        }
+        if (price < 0) {
+            errors.push('Price must be a positive number')
+        }
+    }
+    
     return errors;
 }
 
@@ -216,5 +256,6 @@ module.exports = router;
 module.exports.validateBookInfo = validateBookInfo;
 module.exports.isISBN = isISBN;
 module.exports.remove_isbn13_dash = remove_isbn13_dash;
-module.exports.convert_isbn10_to_isbn13 = remove_isbn13_dash;
+module.exports.convert_isbn10_to_isbn13 = convert_isbn10_to_isbn13;
 module.exports.conformISBN = conformISBN;
+module.exports.validatePrice = validatePrice;

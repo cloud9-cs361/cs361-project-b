@@ -9,8 +9,7 @@ router.get('/', function(req, res, next) {
     var name = req.session.name;
     var email = req.session.email;
     
-    context.name = name;   // Get from objects
-    // context.name = req.session.name = object.name  something like that
+    context.name = name;
     context.email = email;
     console.log(name);
     console.log(email);
