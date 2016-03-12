@@ -14,7 +14,7 @@
 * Implement advanced search - can just reuse functions from search
 
 # Medimum Priority (code structure, helpful items, design, etc.)
-* Improve erorr checking in addbook.js
+* ~~Improve error checking in addbook.js~~
 * ~~Adding a book needs to allow doubles for price~~
 * When adding a book if the ISBN exists the existing book entry will populate.  Adding a book should consist of searching the ISBN, then filling in information if it does not exist
 
