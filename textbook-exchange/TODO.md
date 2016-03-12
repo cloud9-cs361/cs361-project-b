@@ -11,7 +11,7 @@
 * Implement searching for books within a proximity
 * Buying a book is from search results
 * ~~Fix displaying books in user profile and include price~~
-* Implement advanced search - can just reuse functions from search
+* ~~Implement advanced search - can just reuse functions from search~~
 
 # Medimum Priority (code structure, helpful items, design, etc.)
 * Improve erorr checking in addbook.js
