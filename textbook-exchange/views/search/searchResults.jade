@@ -10,7 +10,9 @@ div.search_results
                 th PRICE
                 th SELLER
                 th ZIP CODE
+                th DISTANCE
                 th STATUS
+                
         tbody
             if foundBooks
                 -function formatPrice(price){
@@ -27,5 +29,11 @@ div.search_results
                         td #{formatPrice(entry.price)}
                         td #{entry.user.name}
                         td #{entry.user.zip}
+                        if entry.book.distance
+                            td #{entry.book.distance}
+                        else
+                            td 
                         if entry.transaction
                             td #{entry.transaction.status}
+                        else
+                            td OPEN

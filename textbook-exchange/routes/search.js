@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var bookFunctions = require('./addBook');
+var geotools = require('./geotools');
 
 /* GET search page. */
 router.get('/advancedSearch', function(req, res, next) {
@@ -44,6 +45,8 @@ router.post('/advancedSearch', function(req, res, next) {
         }
         else {
             context.foundBooks = searchResults.foundBooks;
+            context.zip = zip;
+            context.findZipDistance = geotools.findZipDistance;
             res.render('search/advancedSearch', context);
         }
     });
@@ -65,10 +68,29 @@ router.post('/',function(req,res){
     /*Search for the Book or Report Error to User*/
     if (errors.length == 0) {
         findBooksByKeyword(searchKeyword, db, function(foundBooks) {
+            var booksToRender = [];
             if (foundBooks != undefined) {
-                var context = {};
-                context.foundBooks = foundBooks;
-                res.render('search/search', context);
+                var distancePromises = [];
+                foundBooks.forEach(function(currentValue, index, array) {
+                    var i = index;
+                    var p = new Promise(function(resolve, reject) {
+                        geotools.findZipDistance(zip, foundBooks[i].user.zip, function (distance) {
+                            resolve({i: i, distance: distance});
+                        });
+                    });
+                    var p2 = p.then(function(value) {
+                        foundBooks[value.i].book.distance = value.distance;
+                        booksToRender.push(foundBooks[value.i]);
+                    });
+                    distancePromises.push(p2);    
+                });
+                
+                Promise.all(distancePromises).then(function(value) {
+                    var context = {};
+                    context.foundBooks = booksToRender;
+                    context.zip = zip;
+                    res.render('search/search', context);
+                });
             }
             else {
                 errors.push("No match found");

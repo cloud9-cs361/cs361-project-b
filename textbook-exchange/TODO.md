@@ -8,7 +8,7 @@
 
 # High Priority
 * ~~Implement searching for books~~ This is working for search box in top right
-* Implement searching for books within a proximity
+* ~~Implement searching for books within a proximity~~ This is working to display the distance to the book from the user.
 * Buying a book is from search results
 * ~~Fix displaying books in user profile and include price~~
 * ~~Implement advanced search - can just reuse functions from search~~
@@ -16,10 +16,10 @@
 # Medimum Priority (code structure, helpful items, design, etc.)
 * ~~Improve error checking in addbook.js~~
 * ~~Adding a book needs to allow doubles for price~~
-* When adding a book if the ISBN exists the existing book entry will populate.  Adding a book should consist of searching the ISBN, then filling in information if it does not exist
+* ~~When adding a book if the ISBN exists the existing book entry will populate.  Adding a book should consist of searching the ISBN, then filling in information if it does not exist~~
 
 # Low Priority (non-critical features that would be good to implement)
 
 * Create hash for passwords and store that in database and use that to authenticate with
-* Don't delete all user information that was filled when creating an account if they receive an error, just delete password
+* ~~Don't delete all user information that was filled when creating an account if they receive an error, just delete password~~
 * Ability to look up existing book and prefill form

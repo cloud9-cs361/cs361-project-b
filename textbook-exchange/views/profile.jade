@@ -33,6 +33,7 @@ block content
                             th EDITION
                             th PRICE
                             th STATUS
+                            th BUYER
                     tbody
                         if userBooks
                             -function formatPrice(price){
@@ -47,8 +48,12 @@ block content
                                     td #{entry.book.author}
                                     td #{entry.book.edition}
                                     td #{formatPrice(entry.price)}
-                                    td #{entry.status}
-                                    td #{entry.zipCode}
+                                    if entry.transaction
+                                        td #{entry.transaction.status}
+                                        td #{entry.transaction.buyer.name}
+                                    else
+                                        td OPEN
+                                    
             h3 Requested Books
             div.book_listing
                 table
@@ -70,8 +75,8 @@ block content
                                         td #{entry.book.author}
                                         td #{entry.book.edition}
                                         td #{formatPrice(entry.price)}
-                                        td #{entry.transaction.status.status}
-                                        td #{entry.transaction.buyer.name}
+                                        td #{entry.transaction.status}
+                                        td #{entry.user.name}
 
 
                     

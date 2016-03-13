@@ -6,7 +6,7 @@ var db = app.dbo;
 /* GET profile page. */
 router.get('/', function(req, res, next) {
     var context = {};
-    
+
     var name = req.session.name;
     var email = req.session.email;
     
