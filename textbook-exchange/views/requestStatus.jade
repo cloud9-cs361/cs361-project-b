@@ -1,0 +1,11 @@
+extends authLayout
+
+block content
+    
+    div.container
+        div.jumbotron
+            h2 Trade Request Status
+                if errors
+                    div.alert.alert-danger
+                        each error in errors
+                            div=error

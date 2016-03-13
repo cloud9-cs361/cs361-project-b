@@ -25,13 +25,19 @@ router.post('/advancedSearch', function(req, res, next) {
     var zip = req.body.zipCode;
     var context = {};
     
+    // if keyword is ISBN then just throw ISBN13 into fuzzy search
+    if (isbn != undefined && bookFunctions.isISBN(isbn)) {
+        isbn = bookFunctions.conformISBN(isbn);
+        console.log("ISBN Search detected: %s", isbn);
+    }
+
     var searchTerms = {
         'isbn': isbn,
         'title': title,
         'author': author,
         'zip': zip
     };
-    
+
     advancedSearch(searchTerms, function(searchResults) {
         if (searchResults.errors.length != 0) {
             context.errors = searchResults.errors;
@@ -47,17 +53,10 @@ router.post('/advancedSearch', function(req, res, next) {
 router.post('/',function(req,res){
     console.log(req.body);
     var zip = req.session.zip;
-    var searchZip = req.body.zipCode;
     var searchKeyword = req.body.searchKeyword;
 
-    var errors;
+    var errors = validateSearch(searchKeyword, zip);
     
-    if (searchZip == undefined) {
-        errors = validateSearch(searchKeyword,zip);
-    }
-    else {
-        errors = validateSearch(searchKeyword, searchZip);
-    }
     // if keyword is ISBN then just throw ISBN13 into fuzzy search
     if (searchKeyword != undefined && bookFunctions.isISBN(searchKeyword)) {
         searchKeyword = bookFunctions.conformISBN(searchKeyword);
@@ -65,51 +64,30 @@ router.post('/',function(req,res){
     }
     /*Search for the Book or Report Error to User*/
     if (errors.length == 0) {
-        if (searchZip == undefined) {
-            findBooksByKeyword(searchKeyword, function(foundBooks) {
-                if (foundBooks != undefined) {
-                    var context = {};
-                    context.foundBooks = foundBooks;
-                    res.render('search/search', context);
-                }
-                else {
-                    errors.push("No match found");
-                    res.render('search/search', {errors: errors});
-                }
-            });
-        }
-        else {
-            findBooksByKeywordAndZip(searchKeyword, searchZip, function(foundBooks) {
-                if (foundBooks != undefined) {
-                    var context = {};
-                    context.foundBooks = foundBooks;
-                    res.render('search/search', context);
-                } 
-                else {
-                    errors.push("No books found with this zip code: %s", searchZip);
-                    res.render('search/search', {errors:errors});
-                }
-            });
-        }
+        findBooksByKeyword(searchKeyword, function(foundBooks) {
+            if (foundBooks != undefined) {
+                var context = {};
+                context.foundBooks = foundBooks;
+                res.render('search/search', context);
+            }
+            else {
+                errors.push("No match found");
+                res.render('search/search', {errors: errors});
+            }
+        });
     }
     else{
         res.render('search/search', {errors: errors});
     }
-    
 });
 
 /*Check the user has input search terms*/
-function validateSearch(searchKeyword,zipCode){
+function validateSearch(searchKeyword){
     var errors = [];
     
     // searchKeyword validation
     if (searchKeyword == undefined || searchKeyword.length == 0) {
         errors.push('Search Terms are required.');
-    }
-
-    // ZipCode validation
-    if (zipCode == undefined || String(zipCode).length != 5) {
-        errors.push('Zipcode is required.');
     }
     
     return errors;
@@ -130,7 +108,10 @@ function advancedSearch(searchTerms, callback) {
   var title = (searchTerms.title == undefined || searchTerms.title.length == 0) ? wildcard : searchTerms.title;
   var author = (searchTerms.author == undefined || searchTerms.author.length == 0) ? wildcard : searchTerms.author;
   var zip = (searchTerms.zip == undefined || searchTerms.zip.length == 0) ? wildcard : searchTerms.zip;
-
+  console.log("OUR ISBN IS: ",isbn);
+  console.log("OUR TITLE IS: ",title);
+  console.log("OUR AUTHOR IS: ",author);
+  console.log("OUR ZIP IS: ",zip);
   bookInstances.find({ $and: [
     {'book.title': {$regex: title, $options: 'i'}}, 
     {'book.isbn' : {$regex: isbn, $options: 'i'}},
@@ -147,7 +128,8 @@ function advancedSearch(searchTerms, callback) {
             callback(searchResults);
         }
         else {
-            console.log("Not found: %s", searchResults);
+            console.log(books);
+            console.log("Not found: %s", JSON.parse(JSON.stringify(searchResults)));
             errors.push("Your search did not yield any results");
             callback(searchResults);
         }

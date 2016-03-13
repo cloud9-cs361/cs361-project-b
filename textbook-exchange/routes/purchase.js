@@ -3,16 +3,21 @@ var router = express.Router();
 var app = require('../app');
 var db = app.dbo;
 
-router.get('/book_id=:book_id', function(req, res, next){
-    var bookid = req.params.book_id;
+router.get('/object_id=:object_id', function(req, res, next){
+    var object_id = req.params.object_id;
+
+    //Save book instance(object id) to session
+    req.session.object_id = object_id;
+    
     var context = {};
     //console.log(bookid);
-    fetchBook(bookid, function(instance){
+    fetchBook(object_id, function(instance){
       context.instance = instance;
       //console.log(instance);
       res.render('purchase', context);
     });
 });
+
 
 function fetchBook(bookid, callback)
 {

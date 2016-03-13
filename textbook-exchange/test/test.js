@@ -3,6 +3,7 @@ var createAccount = require('../routes/createAccount');
 var login = require('../routes/login');
 var addBook = require('../routes/addBook');
 var db = require('monk')('localhost/bookr');
+var search = require('../routes/search');
 
 // check to see if browser supports startsWith()
 // if not, create it
@@ -782,6 +783,80 @@ describe('Validate Adding a Book', function() {
       var expectedErrors = [
         error => error.includes("Price must be a positive number")
       ];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+  });
+});
+
+// Tests for Search for a Book
+describe('Validate Searching for a Book', function() {
+  describe('search', function () {
+    var author = 'Robert Ludlum';
+    var title = 'The Bourne Identity';
+    var isbn = '9780553593549';
+    var zip = '98199';
+    it('search works by author', function () {
+      var errors = search.findBooksByAuthor(author, function(books) {
+        var found = false;
+        for(var i = 0; i < books.length; i++) {
+          if(books[i].book.title == title 
+          && books[i].book.uthor == author
+          && books[i].book.isbn == isbn) {
+            found = true;
+          }
+        }
+        assert(found,true);
+      });
+      var expectedErrors = [];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('search works by title', function () {
+      var errors = search.findBooksByTitle(title, function(books) {
+        var found = false;
+        for(var i = 0; i < books.length; i++) {
+          if(books[i].book.title == title 
+          && books[i].book.author == author 
+          && books[i].book.isbn == isbn) {
+            found = true;
+          }
+        }
+        assert(found,true);
+      });
+      var expectedErrors = [];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('search works by isbn', function () {
+      var errors = search.findBooksByISBN(isbn, function(books) {
+        var found = false;
+        for(var i = 0; i < books.length; i++) {
+          if(books[i].book.title == title 
+          && books[i].book.author == author 
+          && books[i].book.isbn == isbn) {
+            found = true;
+          }
+        }
+        assert(found,true);
+      });
+      var expectedErrors = [];
+      assert.equal(expectedErrors.length, errors.length, errors.toString());
+      expectedErrors.every(expected => errors.some(expected));
+    });
+    it('search works by zip', function () {
+      var errors = search.findBooksByZip(zip, function(books) {
+        var found = false;
+        for(var i = 0; i < books.length; i++) {
+          if(books[i].book.title == title 
+          && books[i].book.author == author 
+          && books[i].book.isbn == isbn) {
+            found = true;
+          }
+        }
+        assert(found,true);
+      });
+      var expectedErrors = [];
       assert.equal(expectedErrors.length, errors.length, errors.toString());
       expectedErrors.every(expected => errors.some(expected));
     });

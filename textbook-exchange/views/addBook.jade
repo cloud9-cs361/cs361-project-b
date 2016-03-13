@@ -1,7 +1,6 @@
 extends authLayout
 
 block content
-    
     div.container
         div.jumbotron
             h2 Add a Book to Trade
@@ -10,23 +9,34 @@ block content
                 div.alert.alert-danger
                     each error in errors
                         div=error
+            
             form(name="addbook" method="post" action="/addBook")
                 div.form-group
                     label ISBN
-                    input(type="text" placeholder="ISBN" name="isbn" min="10" max="14").form-control
+                    input(type="text" placeholder="ISBN" value='#{isbn}' name="isbn" min="10" max="14" id='isbn').form-control
                 div.form-group
                     label Title
-                    input(type="text" placeholder="Title" name="title").form-control
+                    input(type="text" placeholder="Title" value='#{title}' name="title" id='title').form-control
                 div.form-group
                     label Author
-                    input(type="text" placeholder="Author" name="author").form-control
+                    input(type="text" placeholder="Author" value='#{author}' name="author" id='author').form-control
                 div.form-group
                     label Edition
-                    input(type="text" placeholder="1" name="edition").form-control
+                    input(type="text" placeholder="1" value='#{edition}' name="edition" id='edition').form-control
                 div.form-group
                     label Price
-                    input(type="number" placeholder="$" name="price" step="0.01").form-control
-                a(class="button-link", href="/addBook") Cancel
+                    input(type="number" placeholder="$" value='#{price}' name="price" step="0.01" id='price').form-control
+                a(class="button-link", href="/profile") Cancel
                 button(type="submit").btn.btn-primary Add Book
         
-        
+    script(type='text/javascript').
+        function lookupISBN() {
+            $.getJSON( "/addbook/checkISBN", {'isbn': $('#isbn').val()}, function( data ) {
+                if (data.found == true) {
+                    $('#title').val(data.book.title);
+                    $('#author').val(data.book.author);
+                    $('#edition').val(data.book.edition);
+                }
+            });
+        };
+        $('#isbn').blur(lookupISBN);

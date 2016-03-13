@@ -36,7 +36,7 @@ block content
                     tbody
                         if userBooks
                             -function formatPrice(price){
-                                -price = parseInt(price).toFixed(2);
+                                -price = parseFloat(price).toFixed(2);
                                 -price = "$" + price;
                                 -return(price);
                             -}
@@ -48,6 +48,7 @@ block content
                                     td #{entry.book.edition}
                                     td #{formatPrice(entry.price)}
                                     td #{entry.status}
+                                    td #{entry.zipCode}
             h3 Requested Books
             div.book_listing
                 table
@@ -59,5 +60,19 @@ block content
                             th EDITION
                             th PRICE
                             th STATUS
+                            th SELLER
+                    tbody
+                            if  userRequests 
+                                each entry in userRequests
+                                    tr
+                                        td #{entry.book.isbn}
+                                        td #{entry.book.title}
+                                        td #{entry.book.author}
+                                        td #{entry.book.edition}
+                                        td #{formatPrice(entry.price)}
+                                        td #{entry.transaction.status.status}
+                                        td #{entry.transaction.buyer.name}
 
+
+                    
             

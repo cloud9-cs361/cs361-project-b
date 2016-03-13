@@ -11,19 +11,19 @@ block content
     form(method="post" action="/createaccount")
         div.form-group
             label Name
-            input(type="text" placeholder="Name" name="name" id="name").form-control
+            input(type="text" placeholder="Name" value='#{name}' name="name").form-control
         div.form-group
             label Email
-            input(type="email" placeholder="Email" name="email" id="email").form-control
+            input(type="email" placeholder="Email" value='#{email}' name="email").form-control
         div.form-group
             label Password
-            input(type="password" placeholder="Password" name="password" id="password").form-control
+            input(type="password" placeholder="Password" name="password").form-control
         div.form-group
             label Re-enter Password
-            input(type="password" placeholder="Password" name="password2" id="password2").form-control
+            input(type="password" placeholder="Password" name="password2").form-control
         div.form-group
             label Zip Code
-            input(type="text" placeholder="Zip Code" name="zip" id="zip").form-control
+            input(type="text" placeholder="Zip Code" value='#{zip}' name="zip").form-control
         button(type="submit").btn.btn-primary Create Account
     
     p

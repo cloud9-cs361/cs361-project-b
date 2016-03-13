@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var app = require('../app');
+var db = app.dbo;
 
 // check to see if browser supports startsWith()
 // if not, create it
@@ -13,7 +15,27 @@ if (!String.prototype.startsWith) {
 /* GET add book form */
 router.get('/', function(req, res, next){
     console.log(req.session);
-    res.render('addBook');
+    res.render('addBook', {isbn: '', title: '', author: '', edition: '', price: ''});
+});
+
+router.get('/checkISBN', function(req, res, next) {
+    var isbn = req.query.isbn;
+    // if keyword is ISBN then just throw ISBN13 into fuzzy search
+    if (isbn != undefined && isISBN(isbn)) {
+        isbn = conformISBN(isbn);
+        console.log("ISBN Search detected: %s", isbn);
+    }
+    var books = db.get('book');
+    books.find({'isbn': isbn}, function(err, dbResult) {
+        if (err) console.log(err);
+        
+        // didn't find isbn
+        if(dbResult == undefined || dbResult.length == 0) {
+            res.send(JSON.stringify({'found': false}));
+        } else {
+            res.send(JSON.stringify({'found': true, 'book': dbResult[0]}))
+        }
+    }); 
 });
 
 //Submit Book Info into Database
@@ -23,6 +45,7 @@ router.post('/',function(req,res){
     var author = req.body.author;
     var edition = req.body.edition;
     var price = req.body.price;
+    console.log("Price=" + price);
     var status = "open";
     var db = req.app.get('db');
     var books = db.get('book');
@@ -39,12 +62,11 @@ router.post('/',function(req,res){
     errors = errors.concat(priceErrors);
     console.log(errors);
     if (errors.length > 0) {
-        res.render('addBook', {errors: errors}); // If the book is invalid should be only time we display an error
+        res.render('addBook', {errors: errors, isbn: isbn, title: title, author: author, edition: edition, price: price}); // If the book is invalid should be only time we display an error
     }
     else {
         /* check database for book, if book exists then return id, if book does not exist then create book and return its id */
         insertOrGetBookId(book, books, function(ourBook) {
-              
             /* Now get user from db current session */
             getUser(req.session.email, db, function(user) {
                 /* Now insert new book instance with user_id, book, price */
@@ -114,8 +136,9 @@ function validateBookInfo(book) {
 
 function validatePrice(price) {
     var errors = [];
+    console.log(price);
     
-    if (price == undefined || !isNaN(price)) {
+    if (price == undefined || isNaN(price)) {
         errors.push('Price is required');
     }
     else {

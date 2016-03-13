@@ -26,8 +26,8 @@ block content
                         th PRICE
                         td #{formatPrice(instance.price)}
                     tr
-                        td
-                        td
-                            button.btn.btn-primary(href="#") Purchase
+                        th ZIP
+                        td #{instance.user.zip}
+                a.btn.btn-primary(href="/requeststatus") Send Trade Request
             else
                 p No book selected.

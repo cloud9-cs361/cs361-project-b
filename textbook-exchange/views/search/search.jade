@@ -1,8 +1,8 @@
-extends ../authLayout
+extends searchLayout
 
 block content
-    div.container
-        div.jumbotron
+    div.jumbotron
+        div.container.container-fluid
             if errors
                 div.alert.alert-danger
                     each error in errors

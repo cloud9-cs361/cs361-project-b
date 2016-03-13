@@ -89,7 +89,7 @@ function validateAgainstDB(email, usersCollection, callback) {
 
 /* GET createAccount page. */
 router.get('/', function(req, res, next) {
-  res.render('createAccount');
+  res.render('createAccount', {name: '', email: '', zip: ''});
 });
 
 router.post('/', function(req, res) {
@@ -131,7 +131,7 @@ router.post('/', function(req, res) {
       });
     }
     else {
-      res.render('createAccount', {errors: errors});
+      res.render('createAccount', {errors: errors, name: name, email: email, zip: zip});
     }
   });
 });

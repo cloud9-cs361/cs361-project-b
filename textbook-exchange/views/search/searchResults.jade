@@ -8,7 +8,7 @@ div.search_results
                 th AUTHOR
                 th EDITION
                 th PRICE
-                th CONTACT USER
+                th SELLER
                 th ZIP CODE
         tbody
             if foundBooks
@@ -18,11 +18,11 @@ div.search_results
                     -return(price);
                 -}
                 each entry in foundBooks
-                    tr.body(onclick="window.document.location = \"/purchase/book_id=#{entry._id}\";")
+                    tr.body(onclick="window.document.location = \"/purchase/object_id=#{entry._id}\";")
                         td #{entry.book.isbn}
-                        td #{entry.book.title}
+                        td(style='width: 30%') #{entry.book.title}
                         td #{entry.book.author}
-                        td #{entry.book.edition}
+                        td(align='center') #{entry.book.edition}
                         td #{formatPrice(entry.price)}
                         td #{entry.user.name}
                         td #{entry.user.zip}
