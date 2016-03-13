@@ -797,23 +797,20 @@ describe('Validate Searching for a Book', function() {
     var isbn = '9780553593549';
     var zip = '98199';
     it('search works by author', function () {
-      var errors = search.findBooksByAuthor(author, function(books) {
+      search.findBooksByAuthor(author, db, function(books) {
         var found = false;
         for(var i = 0; i < books.length; i++) {
           if(books[i].book.title == title 
-          && books[i].book.uthor == author
+          && books[i].book.author == author
           && books[i].book.isbn == isbn) {
             found = true;
           }
         }
         assert(found,true);
       });
-      var expectedErrors = [];
-      assert.equal(expectedErrors.length, errors.length, errors.toString());
-      expectedErrors.every(expected => errors.some(expected));
     });
     it('search works by title', function () {
-      var errors = search.findBooksByTitle(title, function(books) {
+      search.findBooksByTitle(title, db, function(books) {
         var found = false;
         for(var i = 0; i < books.length; i++) {
           if(books[i].book.title == title 
@@ -824,12 +821,9 @@ describe('Validate Searching for a Book', function() {
         }
         assert(found,true);
       });
-      var expectedErrors = [];
-      assert.equal(expectedErrors.length, errors.length, errors.toString());
-      expectedErrors.every(expected => errors.some(expected));
     });
     it('search works by isbn', function () {
-      var errors = search.findBooksByISBN(isbn, function(books) {
+      search.findBooksByISBN(isbn, db, function(books) {
         var found = false;
         for(var i = 0; i < books.length; i++) {
           if(books[i].book.title == title 
@@ -840,12 +834,9 @@ describe('Validate Searching for a Book', function() {
         }
         assert(found,true);
       });
-      var expectedErrors = [];
-      assert.equal(expectedErrors.length, errors.length, errors.toString());
-      expectedErrors.every(expected => errors.some(expected));
     });
     it('search works by zip', function () {
-      var errors = search.findBooksByZip(zip, function(books) {
+      search.findBooksByZip(zip, db, function(books) {
         var found = false;
         for(var i = 0; i < books.length; i++) {
           if(books[i].book.title == title 
@@ -856,9 +847,6 @@ describe('Validate Searching for a Book', function() {
         }
         assert(found,true);
       });
-      var expectedErrors = [];
-      assert.equal(expectedErrors.length, errors.length, errors.toString());
-      expectedErrors.every(expected => errors.some(expected));
     });
   });
 });

@@ -1,7 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var app = require('../app');
-var db = app.dbo;
 
 // check to see if browser supports startsWith()
 // if not, create it
@@ -25,6 +23,7 @@ router.get('/checkISBN', function(req, res, next) {
         isbn = conformISBN(isbn);
         console.log("ISBN Search detected: %s", isbn);
     }
+    var db = req.app.get('db');
     var books = db.get('book');
     books.find({'isbn': isbn}, function(err, dbResult) {
         if (err) console.log(err);
@@ -61,6 +60,7 @@ router.post('/',function(req,res){
     var priceErrors = validatePrice(price);
     errors = errors.concat(priceErrors);
     console.log(errors);
+    var db = req.app.get('db');
     if (errors.length > 0) {
         res.render('addBook', {errors: errors, isbn: isbn, title: title, author: author, edition: edition, price: price}); // If the book is invalid should be only time we display an error
     }
@@ -136,7 +136,6 @@ function validateBookInfo(book) {
 
 function validatePrice(price) {
     var errors = [];
-    console.log(price);
     
     if (price == undefined || isNaN(price)) {
         errors.push('Price is required');

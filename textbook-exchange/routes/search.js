@@ -1,7 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var app = require('../app');
-var db = app.dbo;
 var bookFunctions = require('./addBook');
 
 /* GET search page. */
@@ -19,6 +17,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/advancedSearch', function(req, res, next) {
+    var db = req.app.get('db');
     var isbn = req.body.isbn;
     var title = req.body.title;
     var author = req.body.author;
@@ -37,8 +36,8 @@ router.post('/advancedSearch', function(req, res, next) {
         'author': author,
         'zip': zip
     };
-
-    advancedSearch(searchTerms, function(searchResults) {
+    
+    advancedSearch(searchTerms, db, function(searchResults) {
         if (searchResults.errors.length != 0) {
             context.errors = searchResults.errors;
             res.render('search/advancedSearch', context);
@@ -51,6 +50,7 @@ router.post('/advancedSearch', function(req, res, next) {
 });
 
 router.post('/',function(req,res){
+    var db = req.app.get('db');
     console.log(req.body);
     var zip = req.session.zip;
     var searchKeyword = req.body.searchKeyword;
@@ -64,7 +64,7 @@ router.post('/',function(req,res){
     }
     /*Search for the Book or Report Error to User*/
     if (errors.length == 0) {
-        findBooksByKeyword(searchKeyword, function(foundBooks) {
+        findBooksByKeyword(searchKeyword, db, function(foundBooks) {
             if (foundBooks != undefined) {
                 var context = {};
                 context.foundBooks = foundBooks;
@@ -93,7 +93,7 @@ function validateSearch(searchKeyword){
     return errors;
 };
 
-function advancedSearch(searchTerms, callback) {
+function advancedSearch(searchTerms, db, callback) {
   var bookInstances = db.get('book_instance');
   var errors = [];
   var foundBooks = [];
@@ -136,7 +136,7 @@ function advancedSearch(searchTerms, callback) {
     });
 };
 
-function findBooksByKeyword(keyword, callback) {
+function findBooksByKeyword(keyword, db, callback) {
     var bookInstances = db.get('book_instance');
     var foundBooks = [];
     bookInstances.find({ $or: [
@@ -161,7 +161,7 @@ function findBooksByKeyword(keyword, callback) {
     );
 }
 
-function findBooksByKeywordAndZip(keyword, zip, callback) {
+function findBooksByKeywordAndZip(keyword, zip, db, callback) {
     var bookInstances = db.get('book_instance');
     var foundBooks = [];
     bookInstances.find({
@@ -188,31 +188,31 @@ function findBooksByKeywordAndZip(keyword, zip, callback) {
     );
 }
 
-function findBooksByTitle(keyword, callback) {
-    findBooksHelper('book.title', keyword, function(res) {
+function findBooksByTitle(keyword, db, callback) {
+    findBooksHelper('book.title', keyword, db, function(res) {
        callback(res); 
     });
 }
 
-function findBooksByISBN(keyword, callback) {
-    findBooksHelper('book.isbn', keyword, function(res) {
+function findBooksByISBN(keyword, db, callback) {
+    findBooksHelper('book.isbn', keyword, db, function(res) {
        callback(res); 
     });
 }
 
-function findBooksByAuthor(keyword, callback) {
-    findBooksHelper('book.author', keyword, function(res) {
+function findBooksByAuthor(keyword, db, callback) {
+    findBooksHelper('book.author', keyword, db, function(res) {
        callback(res); 
     });
 }
 
-function findBooksByZip(keyword, callback) {
-    findBooksHelper('user.zip', keyword, function(res) {
+function findBooksByZip(keyword, db, callback) {
+    findBooksHelper('user.zip', keyword, db, function(res) {
        callback(res); 
     });
 }
 
-function findBooksHelper(fieldName, keyword, callback) {
+function findBooksHelper(fieldName, keyword, db, callback) {
     var bookInstances = db.get('book_instance');
     var params = {$regex: keyword, $options: 'i'};
     var query = {};
@@ -233,9 +233,10 @@ function findBooksHelper(fieldName, keyword, callback) {
     });
 }
 
-exports.findBooksByTitle = findBooksByTitle;
-exports.findBooksByKeyword = findBooksByKeyword;
-exports.findBooksByISBN = findBooksByISBN;
-exports.findBooksByAuthor = findBooksByAuthor;
-exports.findBooksByZip = findBooksByZip;
 module.exports = router;
+
+module.exports.findBooksByTitle = findBooksByTitle;
+module.exports.findBooksByKeyword = findBooksByKeyword;
+module.exports.findBooksByISBN = findBooksByISBN;
+module.exports.findBooksByAuthor = findBooksByAuthor;
+module.exports.findBooksByZip = findBooksByZip;
