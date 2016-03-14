@@ -12,7 +12,7 @@ block content
                 div.alert.alert-danger
                     each error in errors
                         div=error
-            form(method="post" action="/search/advancedSearch")
+            form(method="post" action="/search")
                 div.form-group
                     input(type="text" placeholder="ISBN, Title, or Author" name="searchKeyword").form-control
                 div.form-group
